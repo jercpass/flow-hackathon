@@ -1,0 +1,218 @@
+{
+  "note": "Real PayPal sandbox payments behind the demo sample bookings, shared by every session. Made by scripts/paypal-samples.js. Fake money; not secret.",
+  "createdAt": "2026-11-03T17:41:10.931Z",
+  "env": "sandbox",
+  "clientIdHash": "3390331db2d1",
+  "businesses": {
+    "willow": [
+      {
+        "amount": 40,
+        "currency": "USD",
+        "orderId": "7B235565XY172874T",
+        "captureId": "3WA75826XH194123Y"
+      },
+      {
+        "amount": 40,
+        "currency": "USD",
+        "orderId": "90T20476861234541",
+        "captureId": "6PM306150C304061R"
+      },
+      {
+        "amount": 40,
+        "currency": "USD",
+        "orderId": "78710805238123024",
+        "captureId": "26E772764D342692X"
+      },
+      {
+        "amount": 40,
+        "currency": "USD",
+        "orderId": "8HB83862GH609592H",
+        "captureId": "2P845288MD469580K"
+      },
+      {
+        "amount": 120,
+        "currency": "USD",
+        "orderId": "1YG38008SB5703640",
+        "captureId": "2XC76497H8030812M"
+      },
+      {
+        "amount": 120,
+        "currency": "USD",
+        "orderId": "2AB6271157039412M",
+        "captureId": "2LM670733N207890X"
+      },
+      {
+        "amount": 30,
+        "currency": "USD",
+        "orderId": "28236060PD4859646",
+        "captureId": "4KT29060B21120729"
+      },
+      {
+        "amount": 30,
+        "currency": "USD",
+        "orderId": "6H275711MC288304S",
+        "captureId": "0N766195BB4084357"
+      },
+      {
+        "amount": 30,
+        "currency": "USD",
+        "orderId": "3K75256293089583P",
+        "captureId": "16W72858K1613960G",
+        "refundId": "1SN53702SJ324801G"
+      }
+    ],
+    "bluebonnet": [
+      {
+        "amount": 55,
+        "currency": "USD",
+        "orderId": "43A01888H4969374C",
+        "captureId": "8FV36545XS618705L"
+      },
+      {
+        "amount": 55,
+        "currency": "USD",
+        "orderId": "81718405XC3993350",
+        "captureId": "6LT55454ME694942K"
+      },
+      {
+        "amount": 35,
+        "currency": "USD",
+        "orderId": "6MG26233UA3894916",
+        "captureId": "8WV0107675074671D"
+      },
+      {
+        "amount": 35,
+        "currency": "USD",
+        "orderId": "08U70061XT918350P",
+        "captureId": "3NW794882D227293J"
+      },
+      {
+        "amount": 45,
+        "currency": "USD",
+        "orderId": "23X415253D803761H",
+        "captureId": "32983072J29954700"
+      },
+      {
+        "amount": 45,
+        "currency": "USD",
+        "orderId": "71W98722CU542871P",
+        "captureId": "80H09005LA585430K"
+      },
+      {
+        "amount": 54,
+        "currency": "USD",
+        "orderId": "56B51765KM2924429",
+        "captureId": "30U499310F9528224",
+        "refundId": "97X54217A2546354H"
+      }
+    ],
+    "eastside": [
+      {
+        "amount": 42,
+        "currency": "USD",
+        "orderId": "5LX22648CG384991H",
+        "captureId": "46441483DC6402317"
+      },
+      {
+        "amount": 42,
+        "currency": "USD",
+        "orderId": "6TN74673UW702373B",
+        "captureId": "52248156YC089211C"
+      },
+      {
+        "amount": 35,
+        "currency": "USD",
+        "orderId": "9GP441573T6494032",
+        "captureId": "18L84993CY016544D"
+      },
+      {
+        "amount": 30,
+        "currency": "USD",
+        "orderId": "7KT47113RU839833V",
+        "captureId": "9X711289T4135535C"
+      },
+      {
+        "amount": 30,
+        "currency": "USD",
+        "orderId": "49K39281W6345391Y",
+        "captureId": "5YJ32070TA5709157"
+      },
+      {
+        "amount": 18,
+        "currency": "USD",
+        "orderId": "6KC28566G09412535",
+        "captureId": "9S3342234F933883L"
+      },
+      {
+        "amount": 18,
+        "currency": "USD",
+        "orderId": "58X32977GJ499263J",
+        "captureId": "1WL95693XL5289016"
+      },
+      {
+        "amount": 35,
+        "currency": "USD",
+        "orderId": "9KL94149FW4351733",
+        "captureId": "66G20690VM675110F",
+        "refundId": "3RD79193ST371725M"
+      }
+    ],
+    "bartonsprings": [
+      {
+        "amount": 30,
+        "currency": "USD",
+        "orderId": "658012606G889672J",
+        "captureId": "36F5174929833250W"
+      },
+      {
+        "amount": 30,
+        "currency": "USD",
+        "orderId": "9CT057507U255751P",
+        "captureId": "5KY664405H046050B"
+      },
+      {
+        "amount": 30,
+        "currency": "USD",
+        "orderId": "5F639505JY898035M",
+        "captureId": "4EA59710T77224041"
+      },
+      {
+        "amount": 135,
+        "currency": "USD",
+        "orderId": "8WA34162SP084733E",
+        "captureId": "9D97867254881352C"
+      },
+      {
+        "amount": 85,
+        "currency": "USD",
+        "orderId": "4LH29372E62350626",
+        "captureId": "4GT32681A2911913K"
+      },
+      {
+        "amount": 85,
+        "currency": "USD",
+        "orderId": "7S541769K32329932",
+        "captureId": "47A15413SS2248233"
+      },
+      {
+        "amount": 41,
+        "currency": "USD",
+        "orderId": "2DE507852B4796237",
+        "captureId": "32M70941S0726753B"
+      },
+      {
+        "amount": 41,
+        "currency": "USD",
+        "orderId": "78W903797L837072Y",
+        "captureId": "2VN358832U9958504",
+        "refundId": "7213866470499813E"
+      },
+      {
+        "amount": 95,
+        "currency": "USD",
+        "orderId": "7DE734913B140981X",
+        "captureId": "9K6398766U327210K"
+      }
+    ]
+  }
+}

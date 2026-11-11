@@ -1,0 +1,424 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "flow bookings",
+      "intents": [
+        {
+          "name": "ChatIntent",
+          "slots": [
+            {
+              "name": "text",
+              "type": "AnyRequest"
+            }
+          ],
+          "samples": [
+            "{text}"
+          ]
+        },
+        {
+          "name": "LinkIntent",
+          "slots": [
+            {
+              "name": "code",
+              "type": "AMAZON.FOUR_DIGIT_NUMBER"
+            }
+          ],
+          "samples": [
+            "my code is {code}",
+            "the code is {code}",
+            "link {code}",
+            "code {code}",
+            "link with {code}",
+            "{code}"
+          ]
+        },
+        {
+          "name": "UnlinkIntent",
+          "slots": [],
+          "samples": [
+            "disconnect",
+            "disconnect me",
+            "disconnect my account",
+            "disconnect my flow account",
+            "disconnect from flow",
+            "unlink",
+            "unlink me",
+            "unlink my account",
+            "unlink this alexa",
+            "log out",
+            "log me out",
+            "sign out",
+            "sign me out",
+            "forget my account"
+          ]
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "what can you do",
+            "what can I say",
+            "how does this work",
+            "how do I use this",
+            "what do you do"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        }
+      ],
+      "types": [
+        {
+          "name": "AnyRequest",
+          "values": [
+            {
+              "name": {
+                "value": "book me a haircut"
+              }
+            },
+            {
+              "name": {
+                "value": "book me a haircut tomorrow at eleven"
+              }
+            },
+            {
+              "name": {
+                "value": "a haircut with Ana on Monday at eleven"
+              }
+            },
+            {
+              "name": {
+                "value": "I need a beard trim tomorrow evening"
+              }
+            },
+            {
+              "name": {
+                "value": "book a massage for Sunday afternoon"
+              }
+            },
+            {
+              "name": {
+                "value": "is there a spa near me"
+              }
+            },
+            {
+              "name": {
+                "value": "is there a massage place near me this weekend"
+              }
+            },
+            {
+              "name": {
+                "value": "find me a barber near me"
+              }
+            },
+            {
+              "name": {
+                "value": "what are my bookings"
+              }
+            },
+            {
+              "name": {
+                "value": "what do I have booked this week"
+              }
+            },
+            {
+              "name": {
+                "value": "when is my next appointment"
+              }
+            },
+            {
+              "name": {
+                "value": "cancel my booking"
+              }
+            },
+            {
+              "name": {
+                "value": "cancel my next appointment"
+              }
+            },
+            {
+              "name": {
+                "value": "cancel my haircut on Friday"
+              }
+            },
+            {
+              "name": {
+                "value": "how much do I get back if I cancel"
+              }
+            },
+            {
+              "name": {
+                "value": "move my haircut to four pm"
+              }
+            },
+            {
+              "name": {
+                "value": "can I change my appointment to Saturday"
+              }
+            },
+            {
+              "name": {
+                "value": "reschedule my massage to next week"
+              }
+            },
+            {
+              "name": {
+                "value": "how much is a haircut"
+              }
+            },
+            {
+              "name": {
+                "value": "how much is a deep tissue massage"
+              }
+            },
+            {
+              "name": {
+                "value": "what services does Willow have"
+              }
+            },
+            {
+              "name": {
+                "value": "what are your prices"
+              }
+            },
+            {
+              "name": {
+                "value": "what times are free on Saturday afternoon"
+              }
+            },
+            {
+              "name": {
+                "value": "do you have anything at three"
+              }
+            },
+            {
+              "name": {
+                "value": "anything earlier"
+              }
+            },
+            {
+              "name": {
+                "value": "is there parking at Willow and Co"
+              }
+            },
+            {
+              "name": {
+                "value": "what are the opening hours"
+              }
+            },
+            {
+              "name": {
+                "value": "are you open on Sunday"
+              }
+            },
+            {
+              "name": {
+                "value": "tell me about Eastside Barber"
+              }
+            },
+            {
+              "name": {
+                "value": "who does color at Willow"
+              }
+            },
+            {
+              "name": {
+                "value": "book my usual"
+              }
+            },
+            {
+              "name": {
+                "value": "my usual haircut at Willow for Sunday"
+              }
+            },
+            {
+              "name": {
+                "value": "yes book it"
+              }
+            },
+            {
+              "name": {
+                "value": "yes please"
+              }
+            },
+            {
+              "name": {
+                "value": "no thanks"
+              }
+            },
+            {
+              "name": {
+                "value": "the eleven o clock one"
+              }
+            },
+            {
+              "name": {
+                "value": "make it four pm instead"
+              }
+            },
+            {
+              "name": {
+                "value": "with Leo instead"
+              }
+            },
+            {
+              "name": {
+                "value": "pay with my saved PayPal"
+              }
+            },
+            {
+              "name": {
+                "value": "pay the rest of my color appointment"
+              }
+            },
+            {
+              "name": {
+                "value": "what memberships do you have"
+              }
+            },
+            {
+              "name": {
+                "value": "join the monthly membership"
+              }
+            },
+            {
+              "name": {
+                "value": "how many visits do I have left"
+              }
+            },
+            {
+              "name": {
+                "value": "what did I pay last time"
+              }
+            },
+            {
+              "name": {
+                "value": "did I get my refund"
+              }
+            },
+            {
+              "name": {
+                "value": "I want a refund for my last booking"
+              }
+            },
+            {
+              "name": {
+                "value": "what can you do"
+              }
+            },
+            {
+              "name": {
+                "value": "who are you"
+              }
+            },
+            {
+              "name": {
+                "value": "hello"
+              }
+            },
+            {
+              "name": {
+                "value": "hi there"
+              }
+            },
+            {
+              "name": {
+                "value": "good morning"
+              }
+            },
+            {
+              "name": {
+                "value": "thank you"
+              }
+            },
+            {
+              "name": {
+                "value": "that is all"
+              }
+            },
+            {
+              "name": {
+                "value": "help me book something"
+              }
+            },
+            {
+              "name": {
+                "value": "I would like a manicure"
+              }
+            },
+            {
+              "name": {
+                "value": "facial this Saturday"
+              }
+            },
+            {
+              "name": {
+                "value": "get me a trim before Friday"
+              }
+            },
+            {
+              "name": {
+                "value": "book a kids haircut"
+              }
+            },
+            {
+              "name": {
+                "value": "something relaxing this weekend"
+              }
+            },
+            {
+              "name": {
+                "value": "I am allergic to ammonia"
+              }
+            },
+            {
+              "name": {
+                "value": "add a note to my booking"
+              }
+            },
+            {
+              "name": {
+                "value": "what is the cancellation policy"
+              }
+            },
+            {
+              "name": {
+                "value": "can I bring my own products"
+              }
+            },
+            {
+              "name": {
+                "value": "how long does a balayage take"
+              }
+            }
+          ]
+        }
+      ],
+      "modelConfiguration": {
+        "fallbackIntentSensitivity": {
+          "level": "LOW"
+        }
+      }
+    }
+  }
+}

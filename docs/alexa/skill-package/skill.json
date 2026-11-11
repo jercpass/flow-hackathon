@@ -1,0 +1,144 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "name": "Flow Bookings",
+          "summary": "Book and pay at local salons, barbers and spas by voice, settled with PayPal.",
+          "description": "Flow Bookings is the voice side of Flow, an AI booking agent for small businesses. Say what you would like (a haircut, a massage this weekend) and Flow finds a time, books it and pays with your saved PayPal within the spending limit you set. Ask what are my bookings to hear them. Link the skill once with the 4-digit code on the Alexa page of your Flow demo, and say disconnect my account to unlink. PayPal sandbox only: fake money.",
+          "examplePhrases": [
+            "Alexa, open flow bookings",
+            "Alexa, ask flow bookings to book me a haircut",
+            "Alexa, ask flow bookings to disconnect my account"
+          ],
+          "keywords": [
+            "booking",
+            "salon",
+            "paypal",
+            "appointments"
+          ],
+          "smallIconUri": "https://flowhq.vercel.app/alexa/icon-108.png",
+          "largeIconUri": "https://flowhq.vercel.app/alexa/icon-512.png"
+        },
+        "en-IN": {
+          "name": "Flow Bookings",
+          "summary": "Book and pay at local salons, barbers and spas by voice, settled with PayPal.",
+          "description": "Flow Bookings is the voice side of Flow, an AI booking agent for small businesses. Say what you would like (a haircut, a massage this weekend) and Flow finds a time, books it and pays with your saved PayPal within the spending limit you set. Ask what are my bookings to hear them. Link the skill once with the 4-digit code on the Alexa page of your Flow demo, and say disconnect my account to unlink. PayPal sandbox only: fake money.",
+          "examplePhrases": [
+            "Alexa, open flow bookings",
+            "Alexa, ask flow bookings to book me a haircut",
+            "Alexa, ask flow bookings to disconnect my account"
+          ],
+          "keywords": [
+            "booking",
+            "salon",
+            "paypal",
+            "appointments"
+          ],
+          "smallIconUri": "https://flowhq.vercel.app/alexa/icon-108.png",
+          "largeIconUri": "https://flowhq.vercel.app/alexa/icon-512.png"
+        },
+        "en-GB": {
+          "name": "Flow Bookings",
+          "summary": "Book and pay at local salons, barbers and spas by voice, settled with PayPal.",
+          "description": "Flow Bookings is the voice side of Flow, an AI booking agent for small businesses. Say what you would like (a haircut, a massage this weekend) and Flow finds a time, books it and pays with your saved PayPal within the spending limit you set. Ask what are my bookings to hear them. Link the skill once with the 4-digit code on the Alexa page of your Flow demo, and say disconnect my account to unlink. PayPal sandbox only: fake money.",
+          "examplePhrases": [
+            "Alexa, open flow bookings",
+            "Alexa, ask flow bookings to book me a haircut",
+            "Alexa, ask flow bookings to disconnect my account"
+          ],
+          "keywords": [
+            "booking",
+            "salon",
+            "paypal",
+            "appointments"
+          ],
+          "smallIconUri": "https://flowhq.vercel.app/alexa/icon-108.png",
+          "largeIconUri": "https://flowhq.vercel.app/alexa/icon-512.png"
+        },
+        "en-CA": {
+          "name": "Flow Bookings",
+          "summary": "Book and pay at local salons, barbers and spas by voice, settled with PayPal.",
+          "description": "Flow Bookings is the voice side of Flow, an AI booking agent for small businesses. Say what you would like (a haircut, a massage this weekend) and Flow finds a time, books it and pays with your saved PayPal within the spending limit you set. Ask what are my bookings to hear them. Link the skill once with the 4-digit code on the Alexa page of your Flow demo, and say disconnect my account to unlink. PayPal sandbox only: fake money.",
+          "examplePhrases": [
+            "Alexa, open flow bookings",
+            "Alexa, ask flow bookings to book me a haircut",
+            "Alexa, ask flow bookings to disconnect my account"
+          ],
+          "keywords": [
+            "booking",
+            "salon",
+            "paypal",
+            "appointments"
+          ],
+          "smallIconUri": "https://flowhq.vercel.app/alexa/icon-108.png",
+          "largeIconUri": "https://flowhq.vercel.app/alexa/icon-512.png"
+        },
+        "en-AU": {
+          "name": "Flow Bookings",
+          "summary": "Book and pay at local salons, barbers and spas by voice, settled with PayPal.",
+          "description": "Flow Bookings is the voice side of Flow, an AI booking agent for small businesses. Say what you would like (a haircut, a massage this weekend) and Flow finds a time, books it and pays with your saved PayPal within the spending limit you set. Ask what are my bookings to hear them. Link the skill once with the 4-digit code on the Alexa page of your Flow demo, and say disconnect my account to unlink. PayPal sandbox only: fake money.",
+          "examplePhrases": [
+            "Alexa, open flow bookings",
+            "Alexa, ask flow bookings to book me a haircut",
+            "Alexa, ask flow bookings to disconnect my account"
+          ],
+          "keywords": [
+            "booking",
+            "salon",
+            "paypal",
+            "appointments"
+          ],
+          "smallIconUri": "https://flowhq.vercel.app/alexa/icon-108.png",
+          "largeIconUri": "https://flowhq.vercel.app/alexa/icon-512.png"
+        }
+      },
+      "isAvailableWorldwide": false,
+      "distributionCountries": [
+        "US",
+        "IN",
+        "GB",
+        "CA",
+        "AU"
+      ],
+      "testingInstructions": "Start a session at https://flowhq.vercel.app, open Voice assistant, and say the 4-digit code shown under Talk on Alexa.",
+      "category": "ORGANIZERS_AND_ASSISTANTS"
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:ACCOUNT_ID:function:flowhq-dev-alexa"
+        }
+      }
+    },
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "usesPersonalInfo": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "locales": {
+        "en-US": {
+          "privacyPolicyUrl": "https://flowhq.vercel.app",
+          "termsOfUseUrl": "https://flowhq.vercel.app"
+        },
+        "en-IN": {
+          "privacyPolicyUrl": "https://flowhq.vercel.app",
+          "termsOfUseUrl": "https://flowhq.vercel.app"
+        },
+        "en-GB": {
+          "privacyPolicyUrl": "https://flowhq.vercel.app",
+          "termsOfUseUrl": "https://flowhq.vercel.app"
+        },
+        "en-CA": {
+          "privacyPolicyUrl": "https://flowhq.vercel.app",
+          "termsOfUseUrl": "https://flowhq.vercel.app"
+        },
+        "en-AU": {
+          "privacyPolicyUrl": "https://flowhq.vercel.app",
+          "termsOfUseUrl": "https://flowhq.vercel.app"
+        }
+      }
+    }
+  }
+}

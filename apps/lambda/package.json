@@ -1,0 +1,54 @@
+{
+  "name": "flow-lambda",
+  "version": "0.1.0",
+  "description": "Flow backend: AWS Lambda handlers for web chat, Flow Voice, Telegram, Alexa, MCP and PayPal",
+  "main": "src/handlers/dashboardApi.js",
+  "scripts": {
+    "deploy": "node scripts/aws.js deploy",
+    "deploy:prod": "node scripts/aws.js deploy --stage prod",
+    "test": "jest",
+    "test:smoke": "jest --testPathPattern=\"__tests__/smoke\" --testTimeout=60000",
+    "aws:prepare": "node scripts/aws.js prepare",
+    "aws:package": "node scripts/aws.js package"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.137.0",
+    "@aws-sdk/client-cloudwatch": "^3.0.0",
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-kms": "^3.0.0",
+    "@aws-sdk/client-lambda": "^3.1161.0",
+    "@aws-sdk/client-polly": "^3.1159.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/client-secrets-manager": "^3.0.0",
+    "@aws-sdk/client-ses": "^3.1073.0",
+    "@aws-sdk/client-sns": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
+    "@aws-sdk/s3-request-presigner": "^3.1073.0",
+    "@google/generative-ai": "^0.21.0",
+    "@paypal/paypal-server-sdk": "2.5.0",
+    "axios": "^1.21.0",
+    "dayjs": "^1.11.0",
+    "form-data": "^4.0.0",
+    "ioredis": "^5.4.0",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^1.1.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "serverless": "^3.38.0",
+    "serverless-offline": "^13.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/src/__tests__/**/*.test.js"
+    ],
+    "testPathIgnorePatterns": [
+      "__tests__/smoke"
+    ],
+    "testTimeout": 10000
+  }
+}

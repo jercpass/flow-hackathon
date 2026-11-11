@@ -1,0 +1,21 @@
+node_modules/
+.env
+.env.local
+.next/
+coverage/
+.serverless/
+*.log
+
+# Secrets — real credential loaders. Commit only the .example.* templates.
+apps/lambda/set-ssm.ps1
+apps/lambda/set-ssm.sh
+
+# Deploy debugging artifacts (regenerated on demand, often huge)
+changeset*.json
+events.json
+temp-template.json
+
+# Local tool state
+.claude/settings.local.json
+**/.claude/settings.local.json
+.vercel/

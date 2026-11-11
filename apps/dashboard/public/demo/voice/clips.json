@@ -1,0 +1,47 @@
+[
+  {
+    "id": "chat-question",
+    "use": "chat",
+    "label": "Ask about parking and colour",
+    "text": "Quick question before my appointment. Is there parking? And I might add colour next time. Is there anything I need to do first?",
+    "src": "/demo/voice/chat-question.wav",
+    "seconds": 8.2,
+    "voice": "groq-orpheus-troy"
+  },
+  {
+    "id": "chat-cancel",
+    "use": "chat",
+    "label": "Cancel the booking",
+    "text": "Hey, something came up. I need to cancel my haircut.",
+    "src": "/demo/voice/chat-cancel.wav",
+    "seconds": 4,
+    "voice": "groq-orpheus-troy"
+  },
+  {
+    "id": "va-bookings",
+    "use": "voice",
+    "label": "What have I got booked?",
+    "text": "What bookings do I have coming up?",
+    "src": "/demo/voice/va-bookings.wav",
+    "seconds": 2.4,
+    "voice": "groq-orpheus-troy"
+  },
+  {
+    "id": "va-book",
+    "use": "voice",
+    "label": "Book my usual for Sunday",
+    "text": "Book my usual haircut at Willow for Sunday at eleven in the morning.",
+    "src": "/demo/voice/va-book.wav",
+    "seconds": 3.2,
+    "voice": "groq-orpheus-troy"
+  },
+  {
+    "id": "va-parking",
+    "use": "voice",
+    "label": "Ask about parking",
+    "text": "Is there parking at Willow and Co?",
+    "src": "/demo/voice/va-parking.wav",
+    "seconds": 2.7,
+    "voice": "groq-orpheus-troy"
+  }
+]

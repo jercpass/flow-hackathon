@@ -1,0 +1,3 @@
+.vercel
+# Vercel writes its project token here.
+.env*.local

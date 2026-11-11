@@ -1,0 +1,14 @@
+{
+  "name": "flow",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/lambda",
+    "apps/dashboard"
+  ],
+  "scripts": {
+    "dev:dashboard": "npm run dev --workspace=apps/dashboard",
+    "deploy:lambda": "npm run deploy --workspace=apps/lambda",
+    "test:lambda": "npm test --workspace=apps/lambda"
+  }
+}

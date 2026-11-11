@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Interactive map of Flow: hover any part for its endpoints and code, or follow one booking from first message to PayPal capture and refund.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Flow System Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a monochrome system map on a white page; hairlines only, the selected path inverts to solid black. */
+:root {
+  --bg: #ffffff; --ink: #0a0a0a; --muted: #737373; --faint: #a3a3a3; --line: #e5e5e5; --line-strong: #d4d4d4; --panel: #fafafa;
+  --node: #ffffff; --lit-bg: #0a0a0a; --lit-ink: #ffffff; --lit-line: #0a0a0a; --tip-bg: #0a0a0a; --tip-ink: #ffffff; --tip-line: #0a0a0a; --btn-bg: #0a0a0a; --btn-ink: #ffffff;
+  --sans: "Geist", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1b1c1f; --ink: #e6e6e3; --muted: #a2a3a8; --faint: #6e7076; --line: #2e3035; --line-strong: #3d4046; --panel: #212226;
+  --node: #222327; --lit-bg: #34373d; --lit-ink: #ffffff; --lit-line: #d6d6d2; --tip-bg: #2b2d32; --tip-ink: #ececea; --tip-line: #44474e; --btn-bg: #e6e6e3; --btn-ink: #1b1c1f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #1b1c1f; --ink: #e6e6e3; --muted: #a2a3a8; --faint: #6e7076; --line: #2e3035; --line-strong: #3d4046; --panel: #212226;
+  --node: #222327; --lit-bg: #34373d; --lit-ink: #ffffff; --lit-line: #d6d6d2; --tip-bg: #2b2d32; --tip-ink: #ececea; --tip-line: #44474e; --btn-bg: #e6e6e3; --btn-ink: #1b1c1f; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 48px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 32px; }
+header { display: grid; gap: 12px; }
+.eyebrow { font: 400 12px/1 var(--mono); letter-spacing: .04em; color: var(--muted); }
+h1 { font: 600 clamp(30px, 4.4vw, 48px)/1.05 var(--sans); letter-spacing: -.035em; margin: 0; text-wrap: balance; }
+.lead { margin: 0; color: var(--muted); max-width: 64ch; }
+.modes { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--line); }
+.modes button { font: 500 14px/1 var(--sans); background: none; border: 0; color: var(--muted); padding: 0 0 14px; margin-bottom: -1px; border-bottom: 1px solid transparent; cursor: pointer; }
+.modes button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.modes button:hover { color: var(--ink); }
+button:focus-visible, .node:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
+.legend { display: flex; gap: 20px; flex-wrap: wrap; font: 400 12px/1 var(--mono); color: var(--muted); margin-left: auto; padding-bottom: 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend svg { width: 28px; height: 8px; min-width: 0; }
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 40px; align-items: start; }
+@media (max-width: 980px) { .stage { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+.map { overflow-x: auto; min-width: 0; }
+#svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.grp rect { fill: none; stroke: var(--line); stroke-width: 1; }
+.grp text { font: 400 12px var(--mono); fill: var(--muted); letter-spacing: .04em; }
+.node { cursor: pointer; }
+.node rect { fill: var(--node); stroke: var(--line-strong); stroke-width: 1; transition: fill .18s, stroke .18s, opacity .18s; }
+.node.pp rect { stroke-dasharray: 4 3; stroke: var(--faint); }
+.node .t { font: 500 15px var(--sans); fill: var(--ink); letter-spacing: -.01em; transition: fill .18s; }
+.node .s { font: 400 13px var(--sans); fill: var(--muted); transition: fill .18s; }
+.node .r { font: 400 13px var(--mono); fill: var(--muted); transition: fill .18s; }
+.node:hover rect, .node.sel rect { stroke: var(--ink); stroke-dasharray: none; }
+.node.lit rect { fill: var(--lit-bg); stroke: var(--lit-line); stroke-dasharray: none; }
+.node.lit .t, .node.lit .s, .node.lit .r { fill: var(--lit-ink); }
+.wire { fill: none; stroke: var(--line-strong); stroke-width: 1; transition: stroke .18s, opacity .18s; }
+.wire.money { stroke-dasharray: 4 3; stroke: var(--faint); }
+.wire.lit { stroke: var(--lit-line); stroke-width: 1.5; }
+.wlabel { font: 400 12px var(--mono); fill: var(--muted); }
+.dim .node:not(.lit), .dim .wire:not(.lit), .dim .grp { opacity: .32; }
+.arrow-fill { fill: var(--line-strong); } .arrow-money { fill: var(--faint); } .arrow-lit { fill: var(--lit-line); }
+
+.card { border-left: 1px solid var(--line); padding: 4px 0 4px 28px; display: grid; gap: 16px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); min-width: 0; }
+@media (max-width: 980px) { .card { border-left: 0; border-top: 1px solid var(--line); padding: 24px 0 0; position: static; } }
+.card h2 { font: 600 24px/1.15 var(--sans); letter-spacing: -.025em; margin: 0; text-wrap: balance; }
+.card .kind { font: 400 12px/1 var(--mono); letter-spacing: .04em; color: var(--muted); }
+.card p { margin: 0; }
+.card h3 { font: 400 12px/1 var(--mono); letter-spacing: .04em; color: var(--muted); margin: 8px 0 0; font-weight: 400; }
+.card ul { margin: 0; padding-left: 16px; display: grid; gap: 6px; color: var(--ink); }
+.card li::marker { color: var(--faint); }
+.routes { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.route { font: 13px/1.5 var(--mono); padding: 8px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.hint { color: var(--muted); font-size: 13px; }
+.steps { display: flex; gap: 0; flex-wrap: wrap; border: 1px solid var(--line-strong); width: fit-content; max-width: 100%; }
+.steps button { font: 400 13px/1 var(--mono); background: var(--bg); color: var(--muted); border: 0; border-right: 1px solid var(--line-strong); width: 34px; height: 34px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.steps button:last-child { border-right: 0; }
+.steps button[aria-current="step"] { background: var(--btn-bg); color: var(--btn-ink); }
+.nav { display: flex; gap: 12px; }
+.nav button { font: 500 14px/1 var(--sans); background: var(--btn-bg); color: var(--btn-ink); border: 1px solid var(--btn-bg); padding: 11px 18px; cursor: pointer; }
+.nav button#prev { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.nav button:disabled { opacity: .35; cursor: default; }
+.tip { position: fixed; z-index: 20; max-width: 280px; background: var(--tip-bg); color: var(--tip-ink); border: 1px solid var(--tip-line); padding: 12px 14px; font-size: 13px; line-height: 1.5; pointer-events: none; }
+.tip b { display: block; font-weight: 500; font-size: 14px; margin-bottom: 4px; }
+.tip span { font-family: var(--mono); font-size: 12px; opacity: .7; }
+footer { color: var(--muted); font: 400 12px/1.6 var(--mono); border-top: 1px solid var(--line); padding-top: 20px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Flow / PayPal AI Hackathon 2026</div>
+    <h1>One booking engine behind every channel</h1>
+    <p class="lead">Customers book and pay by chatting, talking or through their own AI. Every door runs the same engine, and code, not the AI, decides when money moves. Hover or tap any part for its endpoints and code, or follow one booking from first message to refund.</p>
+  </header>
+
+  <div class="modes" role="group" aria-label="View">
+    <button id="mode-explore" aria-pressed="true">Explore the system</button>
+    <button id="mode-follow" aria-pressed="false">Follow a booking</button>
+    <div class="legend" aria-hidden="true">
+      <span><svg viewBox="0 0 28 8"><line x1="0" y1="4" x2="28" y2="4" stroke="currentColor" stroke-width="1"/></svg>Flow</span>
+      <span><svg viewBox="0 0 28 8"><line x1="0" y1="4" x2="28" y2="4" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/></svg>PayPal money path</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="map" id="map">
+      <svg id="svg" viewBox="0 0 1120 560" role="img" aria-label="Flow architecture: channels, API Gateway, engine, data and PayPal">
+        <defs>
+          <marker id="a-line" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="arrow-fill"/></marker>
+          <marker id="a-money" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="arrow-money"/></marker>
+          <marker id="a-lit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="arrow-lit"/></marker>
+        </defs>
+        <g id="groups"></g>
+        <g id="wires"></g>
+        <g id="nodes"></g>
+      </svg>
+    </div>
+    <aside class="card" id="card" aria-live="polite"></aside>
+  </div>
+
+  <footer>Flow runs on AWS Lambda (us-east-1) with a Next.js dashboard on Vercel. PayPal runs in the sandbox, with fake money only. Live demo: <a href="/" style="color:inherit">flow-hackathon.onpratiks.com</a></footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const GROUPS = [
+  { x: 20, y: 40, w: 180, h: 320, label: 'customers' },
+  { x: 20, y: 380, w: 180, h: 150, label: 'owners' },
+  { x: 440, y: 40, w: 300, h: 380, label: 'flow engine' },
+  { x: 780, y: 40, w: 320, h: 350, label: 'paypal' },
+  { x: 440, y: 452, w: 660, h: 88, label: 'data' }
+]
+
+const N = {
+  webchat: { x: 36, y: 76, w: 148, h: 44, t: 'Web chat', kind: 'Customer channel',
+    sum: 'The reference channel: text, photos, PDFs, Word and Excel files, and voice notes up to a minute.',
+    routes: ['POST /demo/chat'], code: ['handlers/demo.js', 'core/demoChat.js'],
+    more: ['Photos and documents go onto the booking for the business', 'Replies in whatever language the customer writes in'] },
+  voice: { x: 36, y: 128, w: 148, h: 44, t: 'Flow Voice', kind: 'Customer channel',
+    sum: 'Talk to the same assistant in the browser. The browser hears you; Amazon Polly speaks the reply in a matching voice.',
+    routes: ['POST /demo/voice'], code: ['core/voice.js', 'services/cloudTts.js'], more: ['Voice notes are transcribed by Groq Whisper'] },
+  telegram: { x: 36, y: 180, w: 148, h: 44, t: 'Telegram', kind: 'Customer channel',
+    sum: 'Flow\'s demo bot, or a bot per store: the owner pastes a BotFather token and customers just open the link and tap Start.',
+    routes: ['POST /telegram/webhook', 'POST /telegram/bot/{botId}'], code: ['core/telegramBot.js', 'handlers/telegram.js'],
+    more: ['A secret header on every webhook; the token stays server-side', 'One-tap "Pay with saved PayPal" buttons in the chat'] },
+  alexa: { x: 36, y: 232, w: 148, h: 44, t: 'Alexa skill', kind: 'Customer channel',
+    sum: '"Alexa, open Flow Bookings." Linked once with a 4-digit code; "disconnect my account" unlinks.',
+    routes: ['Alexa invokes the Lambda directly'], code: ['handlers/alexa.js', 'core/alexa.js'],
+    more: ['Says "One moment" while the AI works (Alexa waits about 8 seconds)', 'English for the US, India, UK, Canada and Australia'] },
+  mcpc: { x: 36, y: 284, w: 148, h: 44, t: 'Your AI (MCP)', kind: 'Customer channel',
+    sum: 'Claude, ChatGPT, Cursor or VS Code books and pays for the customer through a session MCP link.',
+    routes: ['/mcp/{token}  (customer role)'], code: ['handlers/mcp.js', 'mcp/sessionServers.js'],
+    more: ['Money steps ask the person to confirm in their own app', '"Connect to Claude" opens Claude with Flow filled in'] },
+  dash: { x: 36, y: 416, w: 148, h: 44, t: 'Dashboard', kind: 'Owner channel',
+    sum: 'The owner\'s Next.js app: AG Grid tables and the PayPal ledger, a Bryntum calendar that follows PayPal.',
+    routes: ['/dashboard/bookings', '/dashboard/calendar/events', '/dashboard/payments', '/dashboard/disputes', '/dashboard/knowledge'], code: ['apps/dashboard', 'handlers/dashboardApi.js'],
+    more: ['A held seat is a striped "waiting for PayPal" bar until capture', 'Ledger totals follow the filters; CSV export'] },
+  mcpo: { x: 36, y: 468, w: 148, h: 44, t: 'Owner AI (MCP)', kind: 'Owner channel',
+    sum: 'The owner runs the business by asking their own AI: schedule, refunds, disputes, PayPal reports, setup.',
+    routes: ['/mcp/{token}  (owner role)'], code: ['mcp/sessionServers.js', 'core/ownerManage.js'],
+    more: ['Every dashboard action has an owner tool', 'PayPal is built in: no token to paste'] },
+  api: { x: 240, y: 76, w: 160, h: 312, t: 'API Gateway', kind: 'Entry point', tall: true,
+    sum: 'One AWS stack (flowhq-dev). Every channel and every PayPal callback enters here, then runs on Lambda.',
+    routes: ['/demo/*', '/dashboard/*', '/mcp/{token}', '/telegram/*', 'GET /pay/paypal/return', 'POST /webhook/paypal'], code: ['apps/lambda/serverless.yml', 'scripts/aws.js'],
+    more: ['A 29-second limit per request', 'A scheduled sweep wipes demo sessions after 24 hours'],
+    lines: ['/demo/*', '/dashboard/*', '/mcp/{token}', '/telegram/*', '/pay/paypal/*', '/webhook/paypal', 'Alexa → Lambda'] },
+  ai: { x: 456, y: 76, w: 268, h: 56, t: 'Concierge AI', s: 'Claude Haiku 5.5 picks the tools', kind: 'Flow engine',
+    sum: 'Claude Haiku 5.5 reads the conversation and calls Flow\'s tools; Sonnet 5.5 is the backup. It never sets an amount.',
+    routes: ['search_businesses', 'check_availability', 'book_appointment', 'cancel_booking'], code: ['core/concierge.js', 'services/aiRouter.js', 'services/tools.js'],
+    more: ['The prompt lists the coming week\'s dates to look up, never compute', 'Uses the tone each owner picks in Settings'] },
+  engine: { x: 456, y: 144, w: 268, h: 56, t: 'Booking engine', s: 'Real slots, a 10-minute seat hold', kind: 'Flow engine',
+    sum: 'Works out real free slots in the business\'s time zone and holds the chosen seat while the customer pays.',
+    routes: [], code: ['core/engine.js', 'core/slots.js', 'core/holds.js'],
+    more: ['A moved booking is a new appointment plus a cancelled old one', 'Staff hours, breaks, closed dates and booking limits'] },
+  pay: { x: 456, y: 212, w: 268, h: 56, t: 'Payment flow', s: 'Re-check the seat, then capture', kind: 'Flow engine',
+    sum: 'Creates the PayPal order, re-checks the seat when PayPal sends the customer back, and only then captures.',
+    routes: ['GET /pay/paypal/return'], code: ['core/paymentFlow.js', 'core/paymentConfirm.js', 'core/savedPaypal.js', 'core/allowance.js'],
+    more: ['Seat gone: no capture, the customer isn\'t charged', 'Booking fails after capture: an automatic full refund', 'Inside the AI allowance: pays from saved PayPal, PayPal told it was MERCHANT-initiated'] },
+  policy: { x: 456, y: 280, w: 268, h: 56, t: 'Refund policy', s: 'Code decides every amount', kind: 'Flow engine',
+    sum: 'The business\'s refund tiers decide what comes back. The AI only quotes it; money moves after a yes.',
+    routes: ['cancel_booking', '/dashboard/bookings/refund'], code: ['core/refunds.js', 'core/refundRequests.js', 'core/disputes.js'],
+    more: ['Refund requests: the owner refunds any amount or declines', 'Disputes answered from the booking\'s own record, with a PDF'] },
+  trace: { x: 456, y: 348, w: 268, h: 56, t: 'Under the hood + inbox', s: 'Every step, live; no email', kind: 'Flow engine',
+    sum: 'A live timeline of each AI step, seat hold and PayPal call, and a web inbox for the customer and the owner.',
+    routes: ['GET /demo/trace', 'GET /demo/inbox'], code: ['services/trace.js', 'services/demoInbox.js', 'core/bookingMail.js'],
+    more: ['SDK steps are labelled "via: PayPal Server SDK (APIMatic)"'] },
+  db: { x: 456, y: 484, w: 200, h: 40, t: 'DynamoDB', kind: 'Data',
+    sum: 'Businesses, customers, bookings, pending payments, invoices, processed webhooks and demo sessions (24-hour TTL).',
+    routes: [], code: ['services/dynamo/*', 'services/demoStore.js'], more: ['Processed messages make every webhook run once'] },
+  redis: { x: 676, y: 484, w: 200, h: 40, t: 'Seat holds', kind: 'Data',
+    sum: 'A seat is held for 10 minutes while the customer pays, so two people can\'t both pay for the last one. On the live demo the hold is a DynamoDB conditional write; Redis takes over when one is set up.',
+    routes: [], code: ['services/redis.js', 'core/holds.js'], more: ['Under the hood shows "Seat held while the customer pays (DynamoDB)"'] },
+  files: { x: 896, y: 484, w: 188, h: 40, t: 'S3 + Claude Files', kind: 'Data',
+    sum: 'Everything people send, not just PDFs: photos, Word, Excel and text files, and voice notes. Booking photos are kept in S3; the knowledge base lives in Claude\'s Files API, read whole and quoted.',
+    routes: ['POST /demo/chat  (attachments)', '/dashboard/knowledge'], code: ['services/media.js', 'services/photos.js', 'services/s3.js', 'services/rag.js'],
+    more: ['Chat: photos (JPG, PNG, WebP, GIF), PDF, Word, Excel, text and CSV up to 4 MB; voice notes up to 1 minute, transcribed', 'Knowledge base: PDF, Word, Excel, text or a photo, up to 10 MB', 'A PDF with real text is kept as text: 1,867 tokens a question down to 336', 'Booking photos are deleted when the demo session ends'] },
+  sdk: { x: 796, y: 76, w: 288, h: 176, t: 'PayPal Server SDK', s: 'generated by APIMatic', kind: 'PayPal', pp: true,
+    sum: 'The money path runs on PayPal\'s official SDK, set up with the APIMatic Context Plugin. Every write carries a PayPal-Request-Id.',
+    routes: ['OrdersController.createOrder', 'OrdersController.captureOrder', 'PaymentsController.refundCapturedPayment', 'VaultController (saved PayPal)', 'SubscriptionsController (memberships)'], code: ['services/payments/paypalSdk.js', 'services/payments/paypal.js'],
+    more: ['A 15-second timeout; retries for GETs only', 'An already-captured order returns the existing capture'],
+    lines: ['Orders: create, capture, look up', 'Payments: refunds, captures', 'Vault: saved PayPal', 'Subscriptions: memberships'] },
+  rest: { x: 796, y: 268, w: 288, h: 100, t: 'PayPal REST', s: 'what the SDK doesn\'t cover', kind: 'PayPal', pp: true,
+    sum: 'Called directly because the SDK doesn\'t include them yet.',
+    routes: ['Invoicing v2', 'Disputes', 'Log in with PayPal', 'Webhook signature check'], code: ['services/payments/paypal.js'],
+    more: ['A paid invoice for every booking', 'PayPal webhooks: captures, pending, refunds, reversals, disputes'],
+    lines: ['Invoicing, disputes,', 'log in, webhook checks'] }
+}
+
+const W = [
+  { id: 'c-api', d: 'M200 146H240', label: '' },
+  { id: 'o-api', d: 'M200 455H220V340H240' },
+  { id: 'api-ai', d: 'M400 104H456' },
+  { id: 'ai-engine', d: 'M590 132V144' },
+  { id: 'engine-pay', d: 'M590 200V212' },
+  { id: 'pay-policy', d: 'M590 268V280' },
+  { id: 'policy-trace', d: 'M590 336V348' },
+  { id: 'pay-sdk', d: 'M724 240H796', money: true },
+  { id: 'policy-rest', d: 'M724 308H796', money: true },
+  { id: 'engine-data', d: 'M740 404H760V476', label: '' },
+  { id: 'pp-back', d: 'M940 390V436H320V388', money: true }
+]
+
+const STEPS = [
+  { t: 'The customer asks', nodes: ['webchat', 'api'], wires: ['c-api'],
+    body: '"Book my usual haircut for Saturday" arrives on web chat. Telegram, Alexa, Flow Voice and MCP land in exactly the same place.',
+    route: 'POST /demo/chat', code: 'handlers/demo.js → core/demoChat.js' },
+  { t: 'The AI picks tools', nodes: ['api', 'ai', 'engine', 'db'], wires: ['api-ai', 'ai-engine', 'engine-data'],
+    body: 'Claude Haiku 5.5 knows John\'s usual place and stylist, calls search_businesses and check_availability, and offers Saturday at 11 AM with Ana.',
+    route: 'check_availability', code: 'core/concierge.js, services/tools.js' },
+  { t: 'The seat is held', nodes: ['engine', 'redis'], wires: ['engine-data'],
+    body: 'book_appointment holds the seat for 10 minutes (a DynamoDB conditional write) and quotes $40. Nothing is charged yet.',
+    route: 'book_appointment', code: 'core/holds.js' },
+  { t: 'A PayPal order', nodes: ['pay', 'sdk'], wires: ['engine-pay', 'pay-sdk'],
+    body: 'With saved PayPal and a yes, or inside the AI allowance, Flow pays at once. Otherwise it creates an order and sends the PayPal approve link.',
+    route: 'OrdersController.createOrder  ·  PayPal-Request-Id ord_<booking>', code: 'core/paymentFlow.js, services/payments/paypal.js' },
+  { t: 'Back from PayPal', nodes: ['sdk', 'api', 'pay', 'engine'], wires: ['pp-back', 'api-ai'],
+    body: 'The customer approves on PayPal and is sent back. Flow re-checks that the seat is still free before taking any money.',
+    route: 'GET /pay/paypal/return', code: 'core/paymentConfirm.js' },
+  { t: 'Capture and confirm', nodes: ['pay', 'sdk', 'rest', 'trace', 'db'], wires: ['pay-sdk', 'policy-rest', 'pay-policy', 'policy-trace', 'engine-data'],
+    body: 'Flow captures, books the seat, issues a paid PayPal invoice and messages both inboxes. If the seat had gone, the customer would not be charged.',
+    route: 'OrdersController.captureOrder  ·  PayPal-Request-Id cap_<order>', code: 'core/paymentConfirm.js, services/payments/paypalSdk.js' },
+  { t: 'PayPal confirms', nodes: ['rest', 'api', 'db', 'dash'], wires: ['pp-back', 'o-api'],
+    body: 'PayPal\'s signed webhook confirms the capture (processed once). The owner sees the booking on the Bryntum calendar and in the AG Grid ledger.',
+    route: 'POST /webhook/paypal', code: 'handlers/paypal.js' },
+  { t: 'A cancel, by policy', nodes: ['webchat', 'ai', 'policy', 'sdk'], wires: ['c-api', 'api-ai', 'pay-policy', 'policy-rest', 'pay-sdk'],
+    body: 'John cancels two days ahead. The refund tiers say 60%: Flow quotes $24, and refunds only after his yes.',
+    route: 'PaymentsController.refundCapturedPayment', code: 'core/refunds.js' }
+]
+
+const svgNS = 'http://www.w3.org/2000/svg'
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(svgNS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); if (parent) parent.appendChild(e); return e }
+const txt = (parent, x, y, cls, words) => { const t = el('text', { x, y, class: cls }, parent); t.textContent = words; return t }
+
+const gGroups = document.getElementById('groups'), gWires = document.getElementById('wires'), gNodes = document.getElementById('nodes')
+for (const g of GROUPS) { const grp = el('g', { class: 'grp' }, gGroups); el('rect', { x: g.x, y: g.y, width: g.w, height: g.h, rx: 2 }, grp); txt(grp, g.x + 16, g.y + 22, '', g.label) }
+for (const w of W) el('path', { id: w.id, d: w.d, class: 'wire' + (w.money ? ' money' : ''), 'marker-end': w.money ? 'url(#a-money)' : 'url(#a-line)' }, gWires)
+txt(gWires, 948, 420, 'wlabel', 'returns, webhooks')
+
+for (const [id, n] of Object.entries(N)) {
+  const g = el('g', { class: 'node' + (n.pp ? ' pp' : ''), id: 'n-' + id, tabindex: 0, role: 'button', 'aria-label': n.t }, gNodes)
+  el('rect', { x: n.x, y: n.y, width: n.w, height: n.h, rx: 2 }, g)
+  const center = !n.s && !n.lines
+  if (center) { const t = txt(g, n.x + n.w / 2, n.y + n.h / 2 + 5, 't', n.t); t.setAttribute('text-anchor', 'middle') }
+  else {
+    txt(g, n.x + 14, n.y + 24, 't', n.t)
+    if (n.s) txt(g, n.x + 14, n.y + 42, 's', n.s)
+    if (n.lines) n.lines.forEach((line, i) => txt(g, n.x + 14, n.y + (n.s ? 66 : 50) + i * (n.tall ? 36 : 22), n.tall ? 'r' : 's', line))
+  }
+  g.addEventListener('mouseenter', ev => hover(id, ev)); g.addEventListener('mousemove', moveTip); g.addEventListener('mouseleave', hideTip)
+  g.addEventListener('focus', () => { if (mode === 'explore') show(id) }); g.addEventListener('click', () => { if (mode === 'explore') { pinned = id; show(id) } })
+  g.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); g.dispatchEvent(new Event('click')) } })
+}
+
+const card = document.getElementById('card'), tip = document.getElementById('tip'), svg = document.getElementById('svg')
+let mode = 'explore', pinned = 'ai', step = 0
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+
+function show(id) {
+  const n = N[id]
+  document.querySelectorAll('.node').forEach(x => x.classList.toggle('sel', x.id === 'n-' + id))
+  card.className = 'card'
+  card.innerHTML = `<div class="kind">${esc(n.kind)}</div><h2>${esc(n.t)}</h2><p>${esc(n.sum)}</p>` +
+    (n.routes.length ? `<h3>${n.pp ? 'Calls' : 'Endpoints and tools'}</h3><div class="routes">${n.routes.map(r => `<span class="route">${esc(r)}</span>`).join('')}</div>` : '') +
+    (n.more.length ? `<h3>Good to know</h3><ul>${n.more.map(m => `<li>${esc(m)}</li>`).join('')}</ul>` : '') +
+    `<h3>Code</h3><div class="routes">${n.code.map(c => `<span class="route">${esc(c)}</span>`).join('')}</div>` +
+    `<p class="hint">Hover any part to preview it; tap to keep it here.</p>`
+}
+function hover(id, ev) {
+  const n = N[id]
+  tip.innerHTML = `<b>${esc(n.t)}</b>${esc(n.sum)}${n.routes[0] ? `<br><span>${esc(n.routes[0])}</span>` : ''}`
+  tip.hidden = false; moveTip(ev)
+}
+function moveTip(ev) { const pad = 14, r = tip.getBoundingClientRect(); let x = ev.clientX + pad, y = ev.clientY + pad; if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - pad; if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - pad; tip.style.left = x + 'px'; tip.style.top = y + 'px' }
+function hideTip() { tip.hidden = true }
+
+function showStep(i) {
+  step = i
+  const s = STEPS[i]
+  svg.classList.add('dim')
+  document.querySelectorAll('.node').forEach(x => { x.classList.remove('sel'); x.classList.toggle('lit', s.nodes.includes(x.id.slice(2))) })
+  document.querySelectorAll('.wire').forEach(w => { const on = s.wires.includes(w.id); w.classList.toggle('lit', on); w.setAttribute('marker-end', on && !w.classList.contains('money') ? 'url(#a-lit)' : w.classList.contains('money') ? 'url(#a-money)' : 'url(#a-line)') })
+  card.className = 'card'
+  card.innerHTML = `<div class="kind">Step ${i + 1} of ${STEPS.length}</div><h2>${esc(s.t)}</h2>` +
+    `<div class="steps" role="tablist" aria-label="Steps">${STEPS.map((x, j) => `<button role="tab" data-step="${j}" ${j === i ? 'aria-current="step" aria-selected="true"' : 'aria-selected="false"'} aria-label="Step ${j + 1}: ${esc(x.t)}">${j + 1}</button>`).join('')}</div>` +
+    `<p>${esc(s.body)}</p><h3>Endpoint or call</h3><div class="routes"><span class="route">${esc(s.route)}</span></div>` +
+    `<h3>Code</h3><div class="routes"><span class="route">${esc(s.code)}</span></div>` +
+    `<div class="nav"><button id="prev" ${i === 0 ? 'disabled' : ''}>Back</button><button id="next" ${i === STEPS.length - 1 ? 'disabled' : ''}>Next step</button></div>`
+  card.querySelector('#prev').onclick = () => showStep(Math.max(0, step - 1))
+  card.querySelector('#next').onclick = () => showStep(Math.min(STEPS.length - 1, step + 1))
+  card.querySelectorAll('[data-step]').forEach(b => b.onclick = () => showStep(Number(b.dataset.step)))
+}
+function setMode(m) {
+  mode = m
+  document.getElementById('mode-explore').setAttribute('aria-pressed', String(m === 'explore'))
+  document.getElementById('mode-follow').setAttribute('aria-pressed', String(m === 'follow'))
+  if (m === 'explore') {
+    svg.classList.remove('dim')
+    document.querySelectorAll('.node').forEach(x => x.classList.remove('lit'))
+    document.querySelectorAll('.wire').forEach(w => { w.classList.remove('lit'); w.setAttribute('marker-end', w.classList.contains('money') ? 'url(#a-money)' : 'url(#a-line)') })
+    show(pinned)
+  } else showStep(step)
+}
+document.getElementById('mode-explore').onclick = () => setMode('explore')
+document.getElementById('mode-follow').onclick = () => setMode('follow')
+document.addEventListener('keydown', ev => { if (mode !== 'follow' || ev.target.closest('input,textarea')) return; if (ev.key === 'ArrowRight') showStep(Math.min(STEPS.length - 1, step + 1)); if (ev.key === 'ArrowLeft') showStep(Math.max(0, step - 1)) })
+setMode('explore')
+</script>
+
+</body>
+</html>

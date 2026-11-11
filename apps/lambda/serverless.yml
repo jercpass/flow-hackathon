@@ -1,0 +1,451 @@
+service: flowhq
+
+# Flow's own deployment: its own stack
+# (flowhq-<stage>), tables (flowhq-*), bucket and settings (/flowhq/... in
+# SSM), in US East. Flow's flow-dev stack is separate and never touched.
+# Deploy with `npm run deploy --workspace=apps/lambda` (scripts/aws.js), not a
+# bare `serverless deploy`: this is an npm workspace and the packages live in
+# the repo root.
+
+frameworkVersion: '3'
+
+custom:
+  # S3 bucket names are global across all AWS accounts; the account id keeps ours unique.
+  documentsBucket: flowhq-documents-${self:provider.stage}-${aws:accountId}
+  # CORS for the browser-facing routes. maxAge lets browsers cache the preflight
+  # (OPTIONS) answer for 2 hours (Chrome's cap): without it every call made two
+  # round trips, which from far away (India to US East) doubled the wait.
+  cors:
+    origin: '*'
+    headers: [Content-Type, Authorization, Accept, X-Amz-Date, X-Api-Key, X-Amz-Security-Token, X-Amz-User-Agent, Mcp-Session-Id, MCP-Protocol-Version, Last-Event-ID]
+    maxAge: 7200
+  # Pinged every 5 minutes so a judge's first click doesn't wait for a cold start
+  # (about half a second each). The handlers answer the ping before any work.
+  warm:
+    schedule:
+      rate: rate(5 minutes)
+      input: { warm: true }
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: us-east-1   # near the judges and the Claude, Gemini and PayPal servers
+  stage: ${opt:stage, 'dev'}
+  memorySize: 512
+  timeout: 8
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Query
+            - dynamodb:Scan
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:*:table/flowhq-*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/flowhq-*/index/*
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource:
+            - arn:aws:s3:::${self:custom.documentsBucket}/*
+        # The voice page's spoken replies (services/cloudTts.js).
+        - Effect: Allow
+          Action:
+            - polly:SynthesizeSpeech
+          Resource: '*'
+        # An Alexa turn longer than Alexa waits finishes in a background run of
+        # the same function (core/alexa.js, Long turns).
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource:
+            - arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:${self:service}-${self:provider.stage}-alexa
+  environment:
+    STAGE: ${self:provider.stage}
+    EDITION: global
+    DYNAMO_BUSINESSES:          flowhq-businesses
+    DYNAMO_CUSTOMERS:           flowhq-customers
+    DYNAMO_APPOINTMENTS:        flowhq-appointments
+    DYNAMO_PROCESSED_MESSAGES:  flowhq-processed-messages
+    DYNAMO_PENDING_PAYMENTS:    flowhq-pending-payments
+    DYNAMO_KNOWLEDGE_CHUNKS:    flowhq-knowledge-chunks
+    # "Under the hood" per-session timeline (services/trace.js), 24h TTL.
+    DYNAMO_TRACE_EVENTS:        flowhq-trace-events
+    # Demo sessions, web inbox and fair-use counters (core/demoSession.js), 24h TTL.
+    DYNAMO_DEMO:                flowhq-demo
+    S3_DOCUMENTS_BUCKET:        ${self:custom.documentsBucket}
+    # Signs MCP links, owner links and inbox file links. openssl rand -hex 32
+    FLOW_LINK_SECRET:     ${ssm:/flowhq/linkSecret}
+    # This API's own address, worked out by CloudFormation (no second deploy needed).
+    API_URL:
+      Fn::Join: ['', ['https://', { Ref: ApiGatewayRestApi }, '.execute-api.${aws:region}.amazonaws.com/${sls:stage}']]
+    # The Vercel dashboard (origin only, no trailing path). PayPal sends web-chat
+    # buyers back to <DASHBOARD_URL>/demo/client.
+    DASHBOARD_URL:        ${ssm:/flowhq/dashboardUrl, ''}
+    # The AI's thinking runs on Claude Haiku when ANTHROPIC_API_KEY is set, else
+    # Gemini; /flowhq/ai/provider can force one. The embeddings for document
+    # search use Google. See services/ai.js.
+    AI_PROVIDER:          ${ssm:/flowhq/ai/provider, ''}
+    AI_MODEL:             ${ssm:/flowhq/ai/model, ''}
+    AI_BACKUP_MODEL:      ${ssm:/flowhq/ai/backupModel, ''}
+    ANTHROPIC_API_KEY:    ${ssm:/flowhq/anthropic/apiKey, ''}
+    GOOGLE_API_KEY:       ${ssm:/flowhq/google/apiKey}
+    # Voice notes → text with Groq's Whisper; without it, Gemini transcribes (services/speechToText.js).
+    GROQ_API_KEY:         ${ssm:/flowhq/groq/apiKey, ''}
+    # Optional: seat holds. Without it everything works and holds are skipped.
+    REDIS_URL:            ${ssm:/flowhq/redis/url, ''}
+    # PayPal, sandbox only.
+    PAYMENT_PROVIDER:     paypal
+    DEFAULT_CURRENCY:     USD
+    PAYPAL_ENV:           sandbox
+    PAYPAL_CLIENT_ID:     ${ssm:/flowhq/paypal/clientId, ''}
+    PAYPAL_CLIENT_SECRET: ${ssm:/flowhq/paypal/clientSecret, ''}
+    PAYPAL_WEBHOOK_ID:    ${ssm:/flowhq/paypal/webhookId, ''}
+    # Flow's own sandbox Business account: it owns the app, and the demo salon
+    # is paid into it (the only account PayPal lets Flow refund, invoice and
+    # bill memberships on without partner access).
+    PAYPAL_PARTNER_MERCHANT_ID: ${ssm:/flowhq/paypal/partnerMerchantId, ''}
+    PAYPAL_PLATFORM_EMAIL:      ${ssm:/flowhq/paypal/platformEmail, ''}
+    # The sandbox buyer shown to judges on the demo page (fake money only).
+    DEMO_BUYER_EMAIL:       ${ssm:/flowhq/demo/buyerEmail, ''}
+    DEMO_BUYER_PASSWORD:    ${ssm:/flowhq/demo/buyerPassword, ''}
+    # Telegram: Flow's demo bot. Empty token = demo bot off;
+    # stores can still connect their own bots from the Business side.
+    TELEGRAM_BOT_TOKEN:      ${ssm:/flowhq/telegram/botToken, ''}
+    TELEGRAM_BOT_USERNAME:   ${ssm:/flowhq/telegram/botUsername, ''}
+    TELEGRAM_WEBHOOK_SECRET: ${ssm:/flowhq/telegram/webhookSecret, ''}
+    # Alexa skill "Flow Bookings": when set, only that skill may call the alexa function.
+    ALEXA_SKILL_ID:          ${ssm:/flowhq/alexa/skillId, ''}
+    # Self-serve Alexa beta (core/alexaBeta): the ASK CLI's refresh token; empty = sign-up off.
+    ALEXA_LWA_REFRESH_TOKEN: ${ssm:/flowhq/alexa/lwaRefreshToken, ''}
+
+functions:
+  # The demo: sessions, web inbox (+ attachment links), timeline, web chat,
+  # voice assistant, AI setup (handlers/demo.js).
+  demo:
+    handler: src/handlers/demo.handler
+    timeout: 29
+    events:
+      - ${self:custom.warm}
+      - http:
+          path: /demo/{proxy+}
+          method: any
+          cors: ${self:custom.cors}
+
+  # Session MCP links (customer + business) for any AI agent (handlers/mcp.js).
+  mcp:
+    handler: src/handlers/mcp.handler
+    timeout: 29
+    events:
+      - ${self:custom.warm}
+      - http:
+          path: /mcp/{token}
+          method: any
+          cors: ${self:custom.cors}
+
+  # The owner's dashboard: calendar, bookings, services, staff, memberships, PayPal.
+  dashboardApi:
+    handler: src/handlers/dashboardApi.handler
+    timeout: 29
+    events:
+      - ${self:custom.warm}
+      - http:
+          path: /dashboard/{proxy+}
+          method: any
+          cors: ${self:custom.cors}
+
+  # PayPal: buyer return/cancel pages, status for the web chat, memberships, and
+  # signed webhooks. All payments funnel into core/paymentConfirm (exactly-once).
+  paypalReturn:
+    handler: src/handlers/paypal.returnPage
+    timeout: 15
+    events:
+      - http:
+          path: /pay/paypal/return
+          method: get
+
+  paypalCancel:
+    handler: src/handlers/paypal.cancelPage
+    events:
+      - http:
+          path: /pay/paypal/cancel
+          method: get
+
+  paypalStatus:
+    handler: src/handlers/paypal.status
+    events:
+      - http:
+          path: /pay/paypal/status
+          method: get
+          cors: ${self:custom.cors}
+
+  paypalMembershipReturn:
+    handler: src/handlers/paypal.membershipReturn
+    timeout: 15
+    events:
+      - http:
+          path: /pay/paypal/membership/return
+          method: get
+
+  paypalMembershipCancel:
+    handler: src/handlers/paypal.membershipCancel
+    events:
+      - http:
+          path: /pay/paypal/membership/cancel
+          method: get
+
+  paypalVaultReturn:
+    handler: src/handlers/paypal.vaultReturn
+    timeout: 15
+    events:
+      - http:
+          path: /pay/paypal/vault/return
+          method: get
+
+  paypalVaultCancel:
+    handler: src/handlers/paypal.vaultCancel
+    events:
+      - http:
+          path: /pay/paypal/vault/cancel
+          method: get
+
+  paypalLoginReturn:
+    handler: src/handlers/paypal.loginReturn
+    timeout: 15
+    events:
+      - http:
+          path: /pay/paypal/login/return
+          method: get
+
+  paypalWebhook:
+    handler: src/handlers/paypal.webhook
+    timeout: 15
+    events:
+      - http:
+          path: /webhook/paypal
+          method: post
+
+  # Wipes demo sessions past their 24h limit that nobody ended.
+  # Telegram webhooks (handlers/telegram.js): Flow's demo bot (register with
+  # scripts/telegram-set-webhook.js) and each store's own bot (set when connected).
+  telegram:
+    handler: src/handlers/telegram.webhook
+    timeout: 29
+    events:
+      - http:
+          path: /telegram/webhook
+          method: post
+  telegramStore:
+    handler: src/handlers/telegram.storeWebhook
+    timeout: 29
+    events:
+      - http:
+          path: /telegram/bot/{botId}
+          method: post
+
+  # Alexa skill "Flow Bookings" (handlers/alexa.js): the skill calls this Lambda
+  # directly (its ARN goes in the skill's endpoint), so Alexa's own trigger, no HTTP.
+  # Only the skill whose id is in /flowhq/alexa/skillId may invoke it; until that's
+  # set, a placeholder id keeps it closed (docs/alexa/README.md).
+  alexa:
+    handler: src/handlers/alexa.handler
+    # Alexa's own reply goes within ~6 s; a background run (a long booking) may need longer.
+    timeout: 30
+    events:
+      - alexaSkill:
+          appId: ${ssm:/flowhq/alexa/skillId, 'amzn1.ask.skill.00000000-0000-0000-0000-000000000000'}
+      - ${self:custom.warm}
+
+  demoSweep:
+    handler: src/handlers/demo.sweep
+    timeout: 120
+    events:
+      - schedule:
+          rate: rate(1 hour)
+          enabled: true
+
+resources:
+  Resources:
+    BusinessesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: flowhq-businesses
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: businessId
+            AttributeType: S
+          - AttributeName: whatsappPhoneId
+            AttributeType: S
+          - AttributeName: cashfreeVendorId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: businessId
+            KeyType: HASH
+        # The code's lookups expect these indexes to exist (services/dynamo/businesses.js).
+        GlobalSecondaryIndexes:
+          - IndexName: whatsapp-phone-index
+            KeySchema:
+              - AttributeName: whatsappPhoneId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: cashfree-vendor-index
+            KeySchema:
+              - AttributeName: cashfreeVendorId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+    CustomersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: flowhq-customers
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: customerId
+            AttributeType: S
+          - AttributeName: businessId
+            AttributeType: S
+          - AttributeName: phone
+            AttributeType: S
+        KeySchema:
+          - AttributeName: customerId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: business-phone-index
+            KeySchema:
+              - AttributeName: businessId
+                KeyType: HASH
+              - AttributeName: phone
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    # businessId + sortKey (`${startTime}#${appointmentId}`): see appointments.js.
+    AppointmentsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: flowhq-appointments
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: businessId
+            AttributeType: S
+          - AttributeName: sortKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: businessId
+            KeyType: HASH
+          - AttributeName: sortKey
+            KeyType: RANGE
+
+    # Idempotency: payment results and capture → booking pointers.
+    ProcessedMessagesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: flowhq-processed-messages
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+        AttributeDefinitions:
+          - AttributeName: messageId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: messageId
+            KeyType: HASH
+
+    PendingPaymentsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: flowhq-pending-payments
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+        AttributeDefinitions:
+          - AttributeName: referenceId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: referenceId
+            KeyType: HASH
+
+    # The salon's documents for document search (services/rag.js).
+    KnowledgeChunksTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: flowhq-knowledge-chunks
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: businessId
+            AttributeType: S
+          - AttributeName: chunkId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: businessId
+            KeyType: HASH
+          - AttributeName: chunkId
+            KeyType: RANGE
+
+    # Demo sessions, inbox messages and fair-use counters (services/demoStore.js).
+    DemoTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: flowhq-demo
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+
+    # Per-session "Under the hood" timeline (services/trace.js). PK scope, SK ts#seq#id.
+    TraceEventsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: flowhq-trace-events
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+        AttributeDefinitions:
+          - AttributeName: scope
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: scope
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+
+    DocumentsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.documentsBucket}
+        LifecycleConfiguration:
+          Rules:
+            - Id: ExpireOldDocuments
+              Status: Enabled
+              ExpirationInDays: 365
+            # Demo inbox attachments (the receipt PDF) behind signed links; sessions last 24h.
+            - Id: ExpireDemoInboxFiles
+              Status: Enabled
+              Prefix: demo-inbox/
+              ExpirationInDays: 1
+
+plugins:
+  - serverless-offline
