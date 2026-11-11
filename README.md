@@ -1,7 +1,7 @@
 <a href="https://flow-hackathon.onpratiks.com">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner-dark.webp">
-    <img alt="Flow: an AI booking agent for small businesses, paid with PayPal. The Flow logo streams out and flies to its corner, then a customer books a beard trim by chat and pays with saved PayPal while Under the hood fills in the tool call, the seat hold, the PayPal SDK payment and the exactly-once claim, and the logo lights up with a green check." src="docs/images/banner.webp" width="100%">
+    <img alt="Flow: an AI booking agent for small businesses, paid with PayPal. A customer books a beard trim by chat and pays with saved PayPal while Under the hood fills in the tool call, the seat hold, the PayPal SDK payment and the exactly-once claim, and the logo lights up with a green check." src="docs/images/banner.webp" width="100%">
   </picture>
 </a>
 
@@ -9,6 +9,7 @@
 
 <p>
   <a href="https://flow-hackathon.onpratiks.com"><img alt="Live demo" src="https://img.shields.io/badge/live_demo-flow--hackathon.onpratiks.com-0070ba"></a>
+  <a href="https://devpost.com/software/flow-5c6mis"><img alt="Flow on Devpost" src="https://img.shields.io/badge/Devpost-Flow-003E54"></a>
   <a href="https://flow-hackathon.onpratiks.com/systemmap"><img alt="Interactive system map" src="https://img.shields.io/badge/system_map-interactive-111111"></a>
   <a href="#the-hackathon-edition"><img alt="Hackathon edition" src="https://img.shields.io/badge/edition-hackathon-f59e0b"></a>
   <img alt="PayPal sandbox: 9 products" src="https://img.shields.io/badge/PayPal_sandbox-9_products-003087">
@@ -19,7 +20,7 @@
 
 **An AI booking agent for small businesses, paid with PayPal.** Customers book and pay by chatting, talking, or through their own AI assistant. Owners run the business by asking. PayPal moves every dollar, and code, not the AI, decides how much.
 
-I built Flow on my own for the [PayPal AI Hackathon 2026](https://paypalaihackathon.devpost.com/).
+I built Flow on my own for the [PayPal AI Hackathon 2026](https://paypalaihackathon.devpost.com/). **[Flow on Devpost](https://devpost.com/software/flow-5c6mis)**: the story, the 3-minute video and the gallery.
 
 **▶ [Live demo](https://flow-hackathon.onpratiks.com)**: no sign-up. This is the **hackathon edition**: each visitor gets a private copy of a small demo city in Austin, TX, with PayPal sandbox money ([what that means](#the-hackathon-edition)).<br>
 **▶ [Interactive system map](https://flow-hackathon.onpratiks.com/systemmap)**: hover any part for its endpoints and code, or follow one booking from the first message to the refund.

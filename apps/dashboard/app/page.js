@@ -35,26 +35,37 @@ export default function Home() {
 
   const L = info?.limits
   return (
+    <div className="home-page">
     <main className="home">
       <header className="home-hero">
-        <div className="home-brand"><span className="home-mark" aria-hidden="true">F</span>Flow</div>
-        <div><span className="home-eyebrow">PayPal AI Hackathon 2026 edition · live demo</span></div>
-        <h1>An AI booking agent for small businesses, paid with PayPal.</h1>
-        <p className="home-lead">
-          Customers book and pay by chatting or talking, in any language. Owners run the business by asking.
-          Refunds follow the business&apos;s own policy, automatically.
-        </p>
-        {ended && <p className="notice notice-info home-note">Your previous session ended and its data was deleted. Start a fresh one anytime.</p>}
-        <div className="home-actions">
-          <button className="home-start" onClick={() => start('guided')} disabled={!!busy}>{busy === 'guided' ? 'Starting…' : 'Start the guided demo'}</button>
-          <button className="home-start home-start-alt" onClick={() => start('explore')} disabled={!!busy}>{busy === 'explore' ? 'Starting…' : 'Explore on my own'}</button>
+        <div className="home-hero-text">
+          <div className="home-brand"><img className="home-logo" src="/icon.svg" alt="" width="34" height="34" />Flow</div>
+          <div><span className="home-eyebrow">PayPal AI Hackathon 2026 edition · live demo</span></div>
+          <h1>An AI booking agent for small businesses, <em>paid with PayPal.</em></h1>
+          <p className="home-lead">
+            Customers book and pay by chatting or talking, in any language. Owners run the business by asking.
+            Refunds follow the business&apos;s own policy, automatically.
+          </p>
+          {ended && <p className="notice notice-info home-note">Your previous session ended and its data was deleted. Start a fresh one anytime.</p>}
+          <div className="home-actions">
+            <button className="home-start" onClick={() => start('guided')} disabled={!!busy}>{busy === 'guided' ? 'Starting…' : 'Start the guided demo'}</button>
+            <button className="home-start home-start-alt" onClick={() => start('explore')} disabled={!!busy}>{busy === 'explore' ? 'Starting…' : 'Explore on my own'}</button>
+          </div>
+          {error && <p className="home-error">{error}</p>}
+          <ul className="home-points">
+            <li><Icon kind="check" /> Real AI and real PayPal sandbox payments</li>
+            <li><Icon kind="check" /> No sign-up</li>
+            <li><Icon kind="check" /> Guided tour in about 5 minutes</li>
+          </ul>
         </div>
-        {error && <p className="home-error">{error}</p>}
-        <ul className="home-points">
-          <li><Icon kind="check" /> Real AI and real PayPal sandbox payments</li>
-          <li><Icon kind="check" /> No sign-up</li>
-          <li><Icon kind="check" /> Guided tour in about 5 minutes</li>
-        </ul>
+
+        {/* The Flow logo clip, with a booking floating over it. Decorative: the text says it all. */}
+        <div className="home-stage" aria-hidden="true">
+          <Stage />
+          <span className="home-float home-float-ask">Book my usual haircut for Saturday</span>
+          <span className="home-float home-float-paid"><Icon kind="check" /> Paid with PayPal · $40</span>
+          <span className="home-float home-float-hood">Booked once, never charged twice <b>✓</b></span>
+        </div>
       </header>
 
       <section className="home-features">
@@ -128,11 +139,26 @@ export default function Home() {
         </div>
       </section>
 
+      <div className="home-built">
+        <em>Built with</em>
+        <span>PayPal</span><span>Claude</span><span>AWS Lambda</span><span>Next.js</span><span>Bryntum</span><span>AG Grid</span><span>APIMatic</span>
+      </div>
+
       <footer className="home-foot">
         Built for the PayPal AI Hackathon 2026 · Flow v{version}, hackathon edition
       </footer>
     </main>
+    </div>
   )
+}
+
+// The logo clip loops; with reduced motion asked for, its first frame stands still instead.
+function Stage() {
+  const [still, setStill] = useState(false)
+  useEffect(() => { setStill(window.matchMedia('(prefers-reduced-motion: reduce)').matches) }, [])
+  return still
+    ? <img src="/home/flow-f.jpg" alt="" />
+    : <video src="/home/flow-f.mp4" poster="/home/flow-f.jpg" autoPlay muted loop playsInline preload="auto" />
 }
 
 // Line icons, drawn with the text colour.
