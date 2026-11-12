@@ -776,10 +776,10 @@ Tests: `npx jest` in `apps/lambda` (532 tests).
 
 | | Lines of backend JavaScript |
 |---|---|
-| The pre-hackathon snapshot (commit `1809b63` in my working repo) | about 7,600 |
-| Changed during the hackathon (346 commits, 422 files) | about +51,400 / −3,900 |
+| Before: the pre-hackathon snapshot, my working repo's first commit | about 7,600 |
+| Added during the hackathon | more than 50,000 |
 
-This public repo is a clean copy of the result. Its two commits don't carry that history: my working repo, which starts from the pre-hackathon snapshot, is private. I removed the pre-hackathon code this edition doesn't use (WhatsApp, Cashfree, GST invoices, the Indian phone line and the booking-software imports, about 5,000 lines) before publishing.
+This public repo is a clean copy of the result, so its short history doesn't show that: my working repo, which starts from the pre-hackathon snapshot, is private. I removed the pre-hackathon code this edition doesn't use (WhatsApp, Cashfree, GST invoices, the Indian phone line and the booking-software imports, about 5,000 lines) before publishing.
 
 ## License
 
