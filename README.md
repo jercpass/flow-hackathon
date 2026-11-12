@@ -14,7 +14,7 @@
   <a href="https://flow-hackathon.onpratiks.com/systemmap"><img alt="Interactive system map" src="https://img.shields.io/badge/system_map-interactive-111111"></a>
   <a href="#the-hackathon-edition"><img alt="Hackathon edition" src="https://img.shields.io/badge/edition-hackathon-f59e0b"></a>
   <img alt="PayPal sandbox: 9 products" src="https://img.shields.io/badge/PayPal_sandbox-9_products-003087">
-  <img alt="532 backend tests" src="https://img.shields.io/badge/tests-532-2ea44f">
+  <img alt="533 backend tests" src="https://img.shields.io/badge/tests-533-2ea44f">
   <img alt="Node 22 on AWS Lambda" src="https://img.shields.io/badge/Node_22-AWS_Lambda-339933">
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-lightgrey"></a>
 </p>
@@ -766,7 +766,7 @@ node apps/lambda/scripts/local-api.js                     # API on http://localh
 npm run dev --workspace=apps/dashboard                    # app on http://localhost:3000
 ```
 
-Tests: `npx jest` in `apps/lambda` (532 tests).
+Tests: `npx jest` in `apps/lambda` (533 tests).
 
 ## Built during the hackathon
 
