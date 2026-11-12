@@ -27,7 +27,7 @@ I built Flow on my own for the [PayPal AI Hackathon 2026](https://paypalaihackat
 **▶ [Interactive system map](https://flow-hackathon.onpratiks.com/systemmap)**: hover any part for its endpoints and code, or follow one booking from the first message to the refund.<br>
 **▶ [The film](https://youtu.be/2pcu9kMpHTI)**: Flow in 3 minutes, from a missed call to a refund by policy.
 
-<p align="center"><a href="https://youtu.be/2pcu9kMpHTI"><img alt="Watch the film: Flow, AI agents that book and pay, 3 minutes on YouTube" src="docs/images/film.jpg" width="600"></a></p>
+<p align="center"><a href="https://youtu.be/2pcu9kMpHTI"><img alt="Watch the film: Flow, AI agents that book &amp; pay, 3 minutes on YouTube" src="docs/images/film.jpg" width="600"></a></p>
 
 **Contents:** [Why I built Flow](#why-i-built-flow) · [A day with Flow](#a-day-with-flow) · [Under the hood](#one-booking-under-the-hood) · [Try it](#try-it-in-3-minutes) · [Hackathon edition](#the-hackathon-edition) · [By the numbers](#by-the-numbers) · [What Flow does](#what-flow-does) · [Payment governance](#payment-governance-built-in) · [PayPal](#paypal-used-for-real-sandbox) · [Sponsor tools](#sponsor-tools-used-for-real) · [Architecture](#architecture) · [The money path](#the-money-path) · [Deep dives](#engineering-deep-dives) · [Challenges](#technical-challenges-i-solved) · [Channels](#channels-i-chose-and-the-ones-i-didnt) · [Proud of](#what-im-proud-of) · [Learned](#what-i-learned) · [Next](#whats-next) · [Built with](#built-with) · [Run it locally](#run-it-locally) · [Built during the hackathon](#built-during-the-hackathon)
 
