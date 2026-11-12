@@ -41,7 +41,8 @@ export default function Home() {
         <div className="home-hero-text">
           <div className="home-brand"><img className="home-logo" src="/icon.svg" alt="" width="34" height="34" />Flow</div>
           <div><span className="home-eyebrow">PayPal AI Hackathon 2026 edition · live demo</span></div>
-          <h1>An AI booking agent for small businesses, <em>paid with PayPal.</em></h1>
+          {/* "Book & Pay" never splits around the "&": it wraps as one piece. */}
+          <h1>Flow: AI Agents That <em style={{ whiteSpace: 'nowrap' }}>Book &amp; Pay</em></h1>
           <p className="home-lead">
             Customers book and pay by chatting or talking, in any language. Owners run the business by asking.
             Refunds follow the business&apos;s own policy, automatically.
