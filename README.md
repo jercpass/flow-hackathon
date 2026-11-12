@@ -9,7 +9,7 @@
 
 <p>
   <a href="https://flow-hackathon.onpratiks.com"><img alt="Live demo" src="https://img.shields.io/badge/live_demo-flow--hackathon.onpratiks.com-0070ba"></a>
-  <a href="https://youtu.be/2pcu9kMpHTI"><img alt="The film, 3 minutes on YouTube" src="https://img.shields.io/badge/film-3_min_on_YouTube-c4302b"></a>
+  <a href="https://youtu.be/j1I9i0WqZO8"><img alt="The film, 3 minutes on YouTube" src="https://img.shields.io/badge/film-3_min_on_YouTube-c4302b"></a>
   <a href="https://devpost.com/software/flow-5c6mis"><img alt="Flow on Devpost" src="https://img.shields.io/badge/Devpost-Flow-003E54"></a>
   <a href="https://flow-hackathon.onpratiks.com/systemmap"><img alt="Interactive system map" src="https://img.shields.io/badge/system_map-interactive-111111"></a>
   <a href="#the-hackathon-edition"><img alt="Hackathon edition" src="https://img.shields.io/badge/edition-hackathon-f59e0b"></a>
@@ -27,9 +27,9 @@ I built Flow on my own for the [PayPal AI Hackathon 2026](https://paypalaihackat
 
 **▶ [Live demo](https://flow-hackathon.onpratiks.com)**: no sign-up. This is the **hackathon edition**: each visitor gets a private copy of a small demo city in Austin, TX, with PayPal sandbox money ([what that means](#the-hackathon-edition)).<br>
 **▶ [Interactive system map](https://flow-hackathon.onpratiks.com/systemmap)**: hover any part for its endpoints and code, or follow one booking from the first message to the refund.<br>
-**▶ [The film](https://youtu.be/2pcu9kMpHTI)**: Flow in 3 minutes, from a missed call to a refund by policy.
+**▶ [The film](https://youtu.be/j1I9i0WqZO8)**: Flow in 3 minutes, from a missed call to a refund by policy.
 
-<p align="center"><a href="https://youtu.be/2pcu9kMpHTI"><img alt="Watch the film: Flow, AI agents that book &amp; pay, 3 minutes on YouTube" src="docs/images/film.jpg" width="600"></a></p>
+<p align="center"><a href="https://youtu.be/j1I9i0WqZO8"><img alt="Watch the film: Flow, AI agents that book &amp; pay, 3 minutes on YouTube" src="docs/images/film.jpg" width="600"></a></p>
 
 **Contents:** [Why I built Flow](#why-i-built-flow) · [A day with Flow](#a-day-with-flow) · [Under the hood](#one-booking-under-the-hood) · [Try it](#try-it-in-3-minutes) · [Hackathon edition](#the-hackathon-edition) · [By the numbers](#by-the-numbers) · [What Flow does](#what-flow-does) · [Payment governance](#payment-governance-built-in) · [PayPal](#paypal-used-for-real-sandbox) · [Sponsor tools](#sponsor-tools-used-for-real) · [Architecture](#architecture) · [The money path](#the-money-path) · [Deep dives](#engineering-deep-dives) · [Challenges](#technical-challenges-i-solved) · [Channels](#channels-i-chose-and-the-ones-i-didnt) · [Proud of](#what-im-proud-of) · [Learned](#what-i-learned) · [Next](#whats-next) · [Built with](#built-with) · [Run it locally](#run-it-locally) · [Built during the hackathon](#built-during-the-hackathon)
 
