@@ -1,7 +1,7 @@
 <a href="https://flow-hackathon.onpratiks.com">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner-dark.webp">
-    <img alt="Flow: an AI booking agent for small businesses, paid with PayPal. A customer books a beard trim by chat and pays with saved PayPal while Under the hood fills in the tool call, the seat hold, the PayPal SDK payment and the exactly-once claim, and the logo lights up with a green check." src="docs/images/banner.webp" width="100%">
+    <img alt="Flow: AI agents that book & pay, within limits you set, paid with PayPal. A customer books a beard trim by chat and pays with saved PayPal while Under the hood fills in the tool call, the seat hold, the PayPal SDK payment and the exactly-once claim, and the logo lights up with a green check." src="docs/images/banner.webp" width="100%">
   </picture>
 </a>
 
@@ -19,7 +19,9 @@
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-lightgrey"></a>
 </p>
 
-**An AI booking agent for small businesses, paid with PayPal.** Customers book and pay by chatting, talking, or through their own AI assistant. Owners run the business by asking. PayPal moves every dollar, and code, not the AI, decides how much.
+**AI agents that book & pay, within limits you set.** Customers, or their own AI assistants, book and pay by chatting or talking, and owners run the business by asking. PayPal moves every dollar, and code, not the AI, decides how much.
+
+**For any business that takes bookings.** Flow is built around what every appointment business has: services, staff, opening hours and a cancellation policy. That fits a clinic, a tutor, a fitness studio, a photographer or a repair shop as well as a hair salon. In this README, the film and the live demo I use **salons, barbers and spas** as the example, because almost everyone has booked a haircut, and an empty chair is easy to picture.
 
 I built Flow on my own for the [PayPal AI Hackathon 2026](https://paypalaihackathon.devpost.com/). **[Flow on Devpost](https://devpost.com/software/flow-5c6mis)**: the story, the 3-minute video and the gallery.
 
@@ -184,7 +186,7 @@ Telegram, Alexa and your own AI app (Claude, ChatGPT, Cursor) are in the custome
 
 ## The hackathon edition
 
-I built Flow for real salons, barbers and spas, and the engine is ready for that: each business connects its own PayPal account and is paid directly. Taking it to real businesses is the next step, and it's one I can't complete on my own within a hackathon. A real launch goes through each platform's standard onboarding:
+I built Flow for real businesses that take bookings, starting with salons, barbers and spas, and the engine is ready for that: each business connects its own PayPal account and is paid directly. Taking it to real businesses is the next step, and it's one I can't complete on my own within a hackathon. A real launch goes through each platform's standard onboarding:
 - **PayPal:** joining as a partner platform, so every business can connect its own PayPal account, then moving from sandbox to live keys.
 - **Amazon:** publishing the Alexa skill through certification.
 - **Meta:** business verification and app review for WhatsApp, Instagram and Messenger.
