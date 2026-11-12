@@ -9,6 +9,7 @@
 
 <p>
   <a href="https://flow-hackathon.onpratiks.com"><img alt="Live demo" src="https://img.shields.io/badge/live_demo-flow--hackathon.onpratiks.com-0070ba"></a>
+  <a href="https://youtu.be/2pcu9kMpHTI"><img alt="The film, 3 minutes on YouTube" src="https://img.shields.io/badge/film-3_min_on_YouTube-c4302b"></a>
   <a href="https://devpost.com/software/flow-5c6mis"><img alt="Flow on Devpost" src="https://img.shields.io/badge/Devpost-Flow-003E54"></a>
   <a href="https://flow-hackathon.onpratiks.com/systemmap"><img alt="Interactive system map" src="https://img.shields.io/badge/system_map-interactive-111111"></a>
   <a href="#the-hackathon-edition"><img alt="Hackathon edition" src="https://img.shields.io/badge/edition-hackathon-f59e0b"></a>
@@ -23,9 +24,12 @@
 I built Flow on my own for the [PayPal AI Hackathon 2026](https://paypalaihackathon.devpost.com/). **[Flow on Devpost](https://devpost.com/software/flow-5c6mis)**: the story, the 3-minute video and the gallery.
 
 **▶ [Live demo](https://flow-hackathon.onpratiks.com)**: no sign-up. This is the **hackathon edition**: each visitor gets a private copy of a small demo city in Austin, TX, with PayPal sandbox money ([what that means](#the-hackathon-edition)).<br>
-**▶ [Interactive system map](https://flow-hackathon.onpratiks.com/systemmap)**: hover any part for its endpoints and code, or follow one booking from the first message to the refund.
+**▶ [Interactive system map](https://flow-hackathon.onpratiks.com/systemmap)**: hover any part for its endpoints and code, or follow one booking from the first message to the refund.<br>
+**▶ [The film](https://youtu.be/2pcu9kMpHTI)**: Flow in 3 minutes, from a missed call to a refund by policy.
 
-**Contents:** [Why I built Flow](#why-i-built-flow) · [A day with Flow](#a-day-with-flow) · [Under the hood](#one-booking-under-the-hood) · [Try it](#try-it-in-3-minutes) · [Hackathon edition](#the-hackathon-edition) · [By the numbers](#by-the-numbers) · [What Flow does](#what-flow-does) · [Payment governance](#payment-governance-built-in) · [PayPal](#paypal-used-for-real-sandbox) · [Sponsor tools](#sponsor-tools-used-for-real) · [Architecture](#architecture) · [The money path](#the-money-path) · [Deep dives](#engineering-deep-dives) · [Challenges](#technical-challenges-i-solved) · [Channels](#channels-i-chose-and-the-ones-i-didnt) · [Proud of](#what-im-proud-of) · [Learned](#what-i-learned) · [Next](#whats-next) · [Built with](#built-with) · [Run it locally](#run-it-locally)
+<p align="center"><a href="https://youtu.be/2pcu9kMpHTI"><img alt="Watch the film: Flow, AI agents that book and pay, 3 minutes on YouTube" src="docs/images/film.jpg" width="600"></a></p>
+
+**Contents:** [Why I built Flow](#why-i-built-flow) · [A day with Flow](#a-day-with-flow) · [Under the hood](#one-booking-under-the-hood) · [Try it](#try-it-in-3-minutes) · [Hackathon edition](#the-hackathon-edition) · [By the numbers](#by-the-numbers) · [What Flow does](#what-flow-does) · [Payment governance](#payment-governance-built-in) · [PayPal](#paypal-used-for-real-sandbox) · [Sponsor tools](#sponsor-tools-used-for-real) · [Architecture](#architecture) · [The money path](#the-money-path) · [Deep dives](#engineering-deep-dives) · [Challenges](#technical-challenges-i-solved) · [Channels](#channels-i-chose-and-the-ones-i-didnt) · [Proud of](#what-im-proud-of) · [Learned](#what-i-learned) · [Next](#whats-next) · [Built with](#built-with) · [Run it locally](#run-it-locally) · [Built during the hackathon](#built-during-the-hackathon)
 
 ## Why I built Flow
 
@@ -264,6 +268,7 @@ Code paths are under `apps/lambda/src/`, and the tests are the matching `*.test.
 
 - PayPal webhooks are accepted only with a valid PayPal signature, and each event runs once.
 - With live keys, Flow never collects anyone's money into its own account: each business connects its own PayPal.
+- **Flow's books are checked against PayPal's.** The owner's AI (`paypal_payments`, `paypal_payment`) looks up each booking's order at PayPal and compares what Flow says was paid and refunded with what PayPal says, and names any booking that doesn't match. The PayPal fee and the net to the business come from PayPal's own breakdown on the capture, not from Flow's maths (`core/ownerPaypal.js`, `services/payments/paypal.js`).
 - Before anything is stored, the timeline drops every field named like a token, secret, password, authorization header, API key, cookie or one-time code, and masks email addresses.
 - Each store's Telegram bot checks a secret header on every update, and bot tokens stay on the server.
 - The Alexa function answers only Flow's own skill.
@@ -707,7 +712,7 @@ I planned a far bigger ecosystem, then decided to cut it to what a judge can rea
 ## What's next
 
 - A phone line, so a customer can just call.
-- Checking the PayPal ledger against PayPal's own Transaction Search.
+- Checking the whole PayPal account with Transaction Search, on top of today's check of each booking against its own PayPal order.
 - Type-checking every PayPal request against PayPal's spec at build time.
 - Bringing the same generated-SDK approach to Invoicing and Disputes with APIMatic.
 - The platform onboarding for a real launch: PayPal as a partner platform with live keys, the Alexa skill published, and WhatsApp, Instagram, Messenger and LINE ([The hackathon edition](#the-hackathon-edition)).
@@ -758,7 +763,21 @@ Tests: `npx jest` in `apps/lambda` (532 tests).
 
 ## Built during the hackathon
 
-During the hackathon I built the PayPal integration, the demo city, web chat, Flow Voice, Telegram, Alexa, both MCP servers, and the owner dashboard.
+**Before the hackathon,** Flow was an idea and early code for salons in India: WhatsApp, Instagram and LINE adapters, Indian languages, UPI payments, GST invoices, sync with other booking software, and a booking engine on AWS. It never worked end to end for a real booking, and it had no payment layer an AI agent could use safely.
+
+**During the hackathon** (from Oct 1, 2026), I built:
+- the whole payment layer on PayPal: the nine products above, the signed AI allowance and policy refunds, so code, not the AI, decides every amount;
+- the agent, rebuilt on Claude with 70 tools (23 for customers, 47 for owners);
+- every channel in this edition: web chat, Flow Voice, Telegram, Alexa, and both MCP servers;
+- the owner dashboard with Bryntum Scheduler and AG Grid, the money path on APIMatic's generated PayPal SDK, the Under the hood timeline and the demo city;
+- the film, the logo and the images.
+
+| | Lines of backend JavaScript |
+|---|---|
+| The pre-hackathon snapshot (commit `1809b63` in my working repo) | about 7,600 |
+| Changed during the hackathon (346 commits, 422 files) | about +51,400 / −3,900 |
+
+This public repo is a clean copy of the result. Its two commits don't carry that history: my working repo, which starts from the pre-hackathon snapshot, is private. I removed the pre-hackathon code this edition doesn't use (WhatsApp, Cashfree, GST invoices, the Indian phone line and the booking-software imports, about 5,000 lines) before publishing.
 
 ## License
 
