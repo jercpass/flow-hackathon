@@ -300,6 +300,22 @@ async function onStart(b, chatId, msg, text) {
   return welcome(b, chatId, session)
 }
 
+// The welcome comes with Flow's short logo animation (assets/telegram-welcome.mp4,
+// 640×360, silent, so Telegram loops it like a GIF). It uploads once per bot; then
+// Telegram's file_id for it is reused (a file_id belongs to the bot that sent it).
+const WELCOME_ANIMATION = require('path').join(__dirname, '../assets/telegram-welcome.mp4')
+const animationIds = new Map()   // bot id → file_id
+let animationFile
+function welcomeAnimation(botId) {
+  if (animationIds.has(botId)) return animationIds.get(botId)
+  if (animationFile === undefined) {
+    try { animationFile = require('fs').readFileSync(WELCOME_ANIMATION) } catch { animationFile = null }
+  }
+  return animationFile
+}
+// What Telegram counts against the 1024-character caption: the text, not the tags.
+const visibleLength = html => String(html).replace(/<[^>]*>/g, '').replace(/&(amp|lt|gt|quot);/g, '_').length
+
 // Who you're booking as, and Log in with PayPal if you haven't yet (then your
 // saved PayPal pays in one tap).
 async function welcome(b, chatId, session) {
@@ -314,7 +330,22 @@ async function welcome(b, chatId, session) {
     '',
     MSG.help(name)
   ]
-  return b.client.sendMessage(chatId, lines.join('\n'), loginUrl ? { buttons: [{ text: 'Log in with PayPal', url: loginUrl }] } : {})
+  const html = lines.join('\n')
+  const opts = loginUrl ? { buttons: [{ text: 'Log in with PayPal', url: loginUrl }] } : {}
+  const animation = welcomeAnimation(b.id)
+  if (animation && visibleLength(html) <= 1024) {
+    try {
+      const sent = await b.client.sendAnimation(chatId, animation, { caption: html, ...opts, width: 640, height: 360, filename: 'flow.mp4' })
+      const fileId = sent?.animation?.file_id || sent?.document?.file_id
+      if (fileId) animationIds.set(b.id, fileId)
+      return sent
+    } catch (e) {
+      // Never lose the welcome over the animation: send it as text instead.
+      animationIds.delete(b.id)
+      log.warn('telegram_welcome_animation_failed', { bot: b.id === DEMO ? DEMO : 'store', code: e.code, status: e.status })
+    }
+  }
+  return b.client.sendMessage(chatId, html, opts)
 }
 
 // A button press is sent as the customer's message, like web chat's buttons:

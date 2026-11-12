@@ -18,6 +18,7 @@ jest.mock('../services/telegram', () => {
         answerCallback: jest.fn(async () => ({})),
         sendDocument: jest.fn(async () => ({})),
         sendVoice: jest.fn(async () => ({})),
+        sendAnimation: jest.fn(async () => ({ animation: { file_id: 'ANIM1' } })),
         downloadFile: jest.fn(),
         setWebhook: jest.fn(async () => true),
         deleteWebhook: jest.fn(async () => true)
@@ -52,6 +53,9 @@ const update = message => ({ update_id: updateId++, message: { message_id: 1, ch
 const demoClient = () => tg.demoBot()
 const lastText = c => c.sendMessage.mock.calls[c.sendMessage.mock.calls.length - 1][1]
 const lastOpts = c => c.sendMessage.mock.calls[c.sendMessage.mock.calls.length - 1][2] || {}
+// The welcome is sent as Flow's animation with the text as its caption.
+const welcomes = c => c.sendAnimation.mock.calls.map(([, file, opts]) => ({ file, text: opts.caption, opts }))
+const lastWelcome = c => welcomes(c)[welcomes(c).length - 1]
 const session = { sid: 'S1', status: 'active', expiresAt: Date.now() + 3600_000, customerId: 'C1', customerName: 'Sam Rivera', businessId: 'B1', businessIds: ['B1', 'B2'] }
 
 beforeEach(async () => {
@@ -77,10 +81,29 @@ describe("Flow's demo bot", () => {
     const code = s.link.split('start=')[1]
     expect(code).toMatch(/^[A-Za-z0-9_-]{24}$/)
     await bots.handleUpdate(update({ text: `/start ${code}` }), bots.demoBot())
-    expect(lastText(demoClient())).toMatch(/Linked! You're <b>Sam Rivera<\/b>/)
-    expect(lastOpts(demoClient()).buttons).toEqual([{ text: 'Log in with PayPal', url: 'https://www.sandbox.paypal.com/connect?x=1' }])
+    expect(lastWelcome(demoClient()).text).toMatch(/Linked! You're <b>Sam Rivera<\/b>/)
+    expect(lastWelcome(demoClient()).opts.buttons).toEqual([{ text: 'Log in with PayPal', url: 'https://www.sandbox.paypal.com/connect?x=1' }])
     expect(updateCustomer).toHaveBeenCalledWith('C1', { telegram: { chatId: 555, botId: 'demo' } })
     expect((await bots.linkStatus(await store().getSession('S1'))).linked).toMatchObject({ username: 'judge' })
+  })
+
+  test("the welcome is Flow's animation with the text as its caption, or plain text if Telegram refuses it", async () => {
+    await linked()
+    const client = demoClient()
+    client.sendAnimation.mockRejectedValueOnce(Object.assign(new Error('Telegram sendAnimation failed'), { code: 'TELEGRAM_API', status: 400 }))
+    client.sendMessage.mockClear()
+    await bots.handleUpdate(update({ text: '/start' }), bots.demoBot())
+    expect(lastText(client)).toMatch(/Linked! You're <b>Sam Rivera<\/b>/)
+    expect(lastOpts(client).buttons).toEqual([{ text: 'Log in with PayPal', url: 'https://www.sandbox.paypal.com/connect?x=1' }])
+    // After a refusal the file is uploaded again: the bundled MP4 itself.
+    client.sendMessage.mockClear()
+    await bots.handleUpdate(update({ text: '/start' }), bots.demoBot())
+    const w = lastWelcome(client)
+    expect(Buffer.isBuffer(w.file)).toBe(true)
+    expect(w.file.length).toBe(require('fs').statSync(require('path').join(__dirname, '../assets/telegram-welcome.mp4')).size)
+    expect(w.opts).toMatchObject({ width: 640, height: 360 })
+    expect(w.text).toMatch(/Things to try/)
+    expect(client.sendMessage.mock.calls.filter(c => /Linked!/.test(c[1]))).toHaveLength(0)
   })
 
   test('an unlinked chat is told how to start', async () => {
@@ -209,7 +232,7 @@ describe("a store's own bot", () => {
     const b = await bots.storeBot('777001')
     await bots.handleUpdate(update({ text: 'Book me a haircut' }), b)
     const client = tg.bot(TOKEN)
-    expect(client.sendMessage.mock.calls[0][1]).toMatch(/Willow &amp; Co\. Salon<\/b>'s booking assistant/)
+    expect(welcomes(client)[0].text).toMatch(/Willow &amp; Co\. Salon<\/b>'s booking assistant/)
     expect(updateCustomer).toHaveBeenCalledWith('C1', { telegram: { chatId: 555, botId: '777001' } })
     expect(chatTurn).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ channel: 'telegram', onlyBusinessId: 'B1' }))
   })
@@ -219,14 +242,15 @@ describe("a store's own bot", () => {
     const b = await bots.storeBot('777001')
     await bots.handleUpdate(update({ text: '/start' }), b)
     const client = tg.bot(TOKEN)
-    const welcomes = client.sendMessage.mock.calls.filter(c => /booking assistant/.test(c[1]))
-    expect(welcomes).toHaveLength(1)
+    expect(welcomes(client).filter(w => /booking assistant/.test(w.text))).toHaveLength(1)
     expect(updateCustomer).toHaveBeenCalledWith('C1', { telegram: { chatId: 555, botId: '777001' } })
     expect(chatTurn).not.toHaveBeenCalled()
     // Start again later: welcomed again (it's what /start is for), still once.
-    client.sendMessage.mockClear()
+    client.sendAnimation.mockClear()
     await bots.handleUpdate({ ...update({ text: '/start' }), update_id: 99 }, b)
-    expect(client.sendMessage.mock.calls.filter(c => /booking assistant/.test(c[1]))).toHaveLength(1)
+    expect(welcomes(client).filter(w => /booking assistant/.test(w.text))).toHaveLength(1)
+    // The animation was uploaded before, so this bot reuses Telegram's file_id for it.
+    expect(welcomes(client)[0].file).toBe('ANIM1')
   })
 
   test('its webhook only accepts its own secret', async () => {

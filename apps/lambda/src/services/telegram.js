@@ -66,6 +66,29 @@ function bot(token) {
       if (!j.ok) throw fail('sendVoice', j, r.status)
       return j.result
     },
+    /**
+     * A looping animation (a silent MP4 plays as a GIF) with an HTML caption and
+     * buttons. The caption isn't cut (that could split a tag): Telegram refuses one
+     * over 1024 visible characters, and the caller falls back to a text message.
+     * `animation` is the file as a Buffer, or the file_id Telegram returned for it
+     * earlier (that bot's own, so no re-upload).
+     */
+    async sendAnimation(chatId, animation, { caption, buttons, filename = 'flow.mp4', width, height } = {}) {
+      const extra = {
+        ...(caption ? { caption: String(caption), parse_mode: 'HTML' } : {}),
+        ...(buttons?.length ? { reply_markup: keyboard(buttons) } : {})
+      }
+      if (typeof animation === 'string') return call('sendAnimation', { chat_id: chatId, animation, ...extra })
+      const form = new FormData()
+      form.append('chat_id', String(chatId))
+      form.append('animation', new Blob([animation], { type: 'video/mp4' }), filename)
+      if (width && height) { form.append('width', String(width)); form.append('height', String(height)) }
+      for (const [k, v] of Object.entries(extra)) form.append(k, typeof v === 'string' ? v : JSON.stringify(v))
+      const r = await fetch(`${API}/bot${token}/sendAnimation`, { method: 'POST', body: form, signal: AbortSignal.timeout(30000) })
+      const j = await r.json().catch(() => ({}))
+      if (!j.ok) throw fail('sendAnimation', j, r.status)
+      return j.result
+    },
     sendChatAction: (chatId, action = 'typing') => call('sendChatAction', { chat_id: chatId, action }),
     answerCallback: (id, text) => call('answerCallbackQuery', { callback_query_id: id, ...(text ? { text: String(text).slice(0, 200) } : {}) }),
     /** Send a file (e.g. the PDF receipt). */
