@@ -1,7 +1,7 @@
 <a href="https://flow-hackathon.onpratiks.com">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner-dark.webp">
-    <img alt="Flow: AI agents that book & pay, within limits you set, paid with PayPal. A customer books a beard trim by chat and pays with saved PayPal while Under the hood fills in the tool call, the seat hold, the PayPal SDK payment and the exactly-once claim, and the logo lights up with a green check." src="docs/images/banner.webp" width="100%">
+    <img alt="Flow: AI agents that book & pay, with PayPal. A customer books a beard trim by chat and pays with saved PayPal while Under the hood fills in the tool call, the seat hold, the PayPal SDK payment and the exactly-once claim, and the logo lights up with a green check." src="docs/images/banner.webp" width="100%">
   </picture>
 </a>
 
@@ -19,7 +19,7 @@
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-lightgrey"></a>
 </p>
 
-**AI agents that book & pay, within limits you set.** Customers, or their own AI assistants, book and pay by chatting or talking, and owners run the business by asking. PayPal moves every dollar, and code, not the AI, decides how much.
+**AI agents that book & pay.** Customers book and pay by chatting or talking, or let their own AI do it within limits they set. Owners run the business by asking. PayPal moves every dollar, and code, not the AI, decides how much.
 
 **For any business that takes bookings.** Flow is built around what every appointment business has: services, staff, opening hours and a cancellation policy. That fits a clinic, a tutor, a fitness studio, a photographer or a repair shop as well as a hair salon. In this README, the film and the live demo I use **salons, barbers and spas** as the example, because almost everyone has booked a haircut, and an empty chair is easy to picture.
 
