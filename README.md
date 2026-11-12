@@ -27,7 +27,8 @@ I built Flow on my own for the [PayPal AI Hackathon 2026](https://paypalaihackat
 
 **▶ [Live demo](https://flow-hackathon.onpratiks.com)**: no sign-up. This is the **hackathon edition**: each visitor gets a private copy of a small demo city in Austin, TX, with PayPal sandbox money ([what that means](#the-hackathon-edition)).<br>
 **▶ [Interactive system map](https://flow-hackathon.onpratiks.com/systemmap)**: hover any part for its endpoints and code, or follow one booking from the first message to the refund.<br>
-**▶ [The film](https://youtu.be/j1I9i0WqZO8)**: Flow in 3 minutes, from a missed call to a refund by policy.
+**▶ [The film](https://youtu.be/j1I9i0WqZO8)**: Flow in 3 minutes, from a missed call to a refund by policy.<br>
+**▶ [Booked from a handwritten note](https://youtu.be/_XDP7s70Hec)**: 90 seconds on Telegram, a real recording. The customer photographs a note instead of typing, and Flow books the haircut and takes the $40 with their saved PayPal.
 
 <p align="center"><a href="https://youtu.be/j1I9i0WqZO8"><img alt="Watch the film: Flow, AI agents that book &amp; pay, 3 minutes on YouTube" src="docs/images/film.jpg" width="600"></a></p>
 
@@ -99,7 +100,7 @@ Those rules need a payment partner that already has the pieces an AI booking age
 
 ## A day with Flow
 
-The same Saturday, with Flow. The screens are the live demo, with PayPal sandbox money; the phone shots are from the demo film.
+The same Saturday, with Flow. The screens are the live demo, with PayPal sandbox money; the phone shots are from the demo film, and the handwritten note is a screen recording of the live Telegram bot.
 
 **Before work: a voice note from the car.** A customer sends Flow on Telegram a voice note: "Book a beard trim tomorrow at five." Flow books it at Eastside Barber Co., pays the $18 with their saved PayPal because it fits the AI allowance they set, and answers with a voice note too, in the customer's language, with the transcript underneath. They never look at the screen.
 
@@ -109,7 +110,11 @@ The same Saturday, with Flow. The screens are the live demo, with PayPal sandbox
 
 <img alt="Flow's web chat: 'Book my usual haircut for Saturday afternoon', Flow offers 3 PM with Ana for $40 with the saved PayPal, the customer says 'Yes, book it', and a Payment received card shows $40, Haircut, Oct 31, 2026, 3 PM, paid with saved PayPal" src="docs/images/story-saved-paypal.jpg" width="100%">
 
-**"Like this."** A customer sends a photo of the cut they want. Flow attaches it to the booking, so Ana sees the picture itself on her calendar, not a guess at what was meant.
+**Late morning: a note instead of typing.** Another customer books on Telegram with a pen. They photograph a handwritten note, "Can you book me a haircut?", and Flow reads it and offers their usual. Each new photo is the same note with one more line: "Yes", "On 13th", "9 am", "Yes pay". Then the $40 is paid with their saved PayPal, and the paid PayPal invoice and the receipt PDF arrive in the chat. **▶ [Watch it: 90 seconds, a real recording](https://youtu.be/_XDP7s70Hec)**
+
+<p align="center"><a href="https://youtu.be/_XDP7s70Hec"><img alt="Watch on YouTube, Booked from a handwritten note: Flow's Telegram chat shows the photographed note (2. Yes, 3. On 13th, 4. 9 AM, 5. Yes pay) and Willow &amp; Co. Salon's reply: Payment received ($40), Haircut confirmed for Nov 13, 2026, 9 AM, PayPal invoice 0043 (paid), receipt PDF attached" src="docs/images/telegram-notes.jpg" width="600"></a></p>
+
+**"Like this."** A customer sends a photo of the cut they want. Flow attaches it to the booking, so Ana sees the picture itself on her calendar, not a guess at what was meant. The same video ends with it.
 
 **Early afternoon: Ana keeps cutting.** Her phone isn't ringing. It's showing bookings that are already paid, because the chat, Flow Voice, Telegram, Alexa and the customer's own AI all book into the same calendar, and each one pays before it's confirmed.
 
